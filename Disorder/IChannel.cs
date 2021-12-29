@@ -4,5 +4,7 @@ public interface IChannel {
     public string Name { get; set; }
     public long Id { get; set; }
 
-    public Task SendMessage(string message);
+    public Task<IMessage> SendMessage(string message);
+
+    public Task<IEnumerable<IMessage>> FetchMessages(int limit = 50);
 }

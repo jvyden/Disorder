@@ -5,6 +5,7 @@ public class DummyGuild : IGuild {
     public long Id { get; set; } = new Random().Next();
 
     public IEnumerable<IChannel> Channels => new List<IChannel> {
-                new DummyChannel(),
+        new DummyChannel(),
+        new DummyChannel(),
     };
 }
