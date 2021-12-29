@@ -8,4 +8,8 @@ public class DummyGuild : IGuild {
         new DummyChannel(),
         new DummyChannel(),
     };
+
+    public async Task Process() {
+        
+    }
 }

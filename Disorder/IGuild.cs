@@ -5,4 +5,6 @@ public interface IGuild {
     public long Id { get; set; }
     
     public IEnumerable<IChannel> Channels { get; }
+
+    public Task Process();
 }
