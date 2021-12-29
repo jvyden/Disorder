@@ -7,6 +7,8 @@ public class IRCGuild : IGuild {
     public readonly string Uri;
     internal readonly TcpClient Client;
 
+    public readonly IRCChatClient ChatClient;
+
     private IRCStream? stream;
     internal IRCStream Stream {
         get {
@@ -15,8 +17,9 @@ public class IRCGuild : IGuild {
         }
     }
 
-    public IRCGuild(string uri, bool ssl = false, string? name = null) {
+    public IRCGuild(string uri, IRCChatClient chatClient, bool ssl = false, string? name = null) {
         this.Uri = uri;
+        this.ChatClient = chatClient;
         this.Name = name ?? uri;
 
         string[] uriSplit = Uri.Split(':');
@@ -31,8 +34,8 @@ public class IRCGuild : IGuild {
         
         this.Client = new TcpClient(address, port);
 
-        this.Stream.RunIRCCommand("NICK jvyden2");
-        this.Stream.RunIRCCommand("USER jvyden2 * * :jvyden2");
+        this.Stream.RunIRCCommand($"NICK {chatClient.User.Username}");
+        this.Stream.RunIRCCommand($"USER {chatClient.User.Username} * * :{chatClient.User.Username}");
     }
     public string Name { get; set; }
     public long Id { get; set; }
@@ -43,15 +46,35 @@ public class IRCGuild : IGuild {
     public async Task Process() {
         string[] lines = this.Stream.ReadData().Split("\r\n");
 
-        foreach(string line in lines) {
-            if(line.StartsWith("PING")) {
+        foreach(string line in lines) this.HandleLine(line);
+    }
+
+    public void HandleLine(string line) {
+        if(string.IsNullOrWhiteSpace(line)) return;
+        string[] split = line.Split(" ");
+
+        string command = split[0].StartsWith(':') ? split[1] : split[0];
+
+        line = line.Substring(line.IndexOf(command, StringComparison.Ordinal));
+//        string[] args = line.Split(" ");
+
+        string trail = line.Substring(line.IndexOf(" :", StringComparison.Ordinal) + 1);
+        
+        Console.WriteLine("Got trail: " + trail);
+
+        switch(command) {
+            case "PING": {
                 this.Stream.RunIRCCommand(line.Replace("PING", "PONG"));
                 if(!connected) {
                     this.Stream.RunIRCCommand("JOIN #asdjhkg");
                     connected = true;
                 }
+                break;
             }
-            Console.WriteLine("line: " + line);
+            default: {
+                Console.WriteLine("Unknown command: " + command);
+                break;
+            }
         }
     }
 }

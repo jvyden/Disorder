@@ -4,16 +4,14 @@ using System.Text;
 namespace Disorder.IRC; 
 
 public class IRCStream {
-    private NetworkStream stream;
+    private readonly NetworkStream stream;
     
     public IRCStream(NetworkStream stream) {
         this.stream = stream;
     }
 
     public void RunIRCCommand(string text) {
-        byte[] data = Encoding.ASCII.GetBytes(text + "\r\n");
-        
-        this.stream.Write(data);
+        this.stream.Write(Encoding.ASCII.GetBytes(text + "\r\n"));
         this.stream.Flush();
     }
 
@@ -22,5 +20,5 @@ public class IRCStream {
         stream.Read(buffer, 0, 8196);
         
         return Encoding.UTF8.GetString(buffer);
-    } 
+    }
 }

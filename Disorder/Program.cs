@@ -10,8 +10,6 @@ public static class Program {
             new IRCChatClient(),
         };
 
-        bool connected = false;
-
         while(true) {
             foreach(IGuild guild in chatClients.First().Guilds) {
                 await guild.Process();
