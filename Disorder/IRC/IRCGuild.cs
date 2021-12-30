@@ -34,45 +34,66 @@ public class IRCGuild : IGuild {
         
         this.Client = new TcpClient(address, port);
 
-        this.Stream.RunIRCCommand($"NICK {chatClient.User.Username}");
-        this.Stream.RunIRCCommand($"USER {chatClient.User.Username} * * :{chatClient.User.Username}");
+        this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Username}");
+        this.Stream.RunIRCCommand($"USER {this.ChatClient.User.Username} * * :{this.ChatClient.User.Username}");
     }
     public string Name { get; set; }
     public long Id { get; set; }
 
     public IEnumerable<IChannel> Channels => new List<IChannel>();
-
-    private bool connected;
+    
     public async Task Process() {
-        string[] lines = this.Stream.ReadData().Split("\r\n");
+        List<string> lines = new();
+        
+        string? readLine;
+        while((readLine = this.Stream.ReadLine()) != null) lines.Add(readLine);
 
         foreach(string line in lines) this.HandleLine(line);
     }
 
     public void HandleLine(string line) {
-        if(string.IsNullOrWhiteSpace(line)) return;
+        if(string.IsNullOrWhiteSpace(line) || line.StartsWith((char)0x00)) return;
         string[] split = line.Split(" ");
 
         string command = split[0].StartsWith(':') ? split[1] : split[0];
+        if(string.IsNullOrWhiteSpace(command)) return;
 
         line = line.Substring(line.IndexOf(command, StringComparison.Ordinal));
-//        string[] args = line.Split(" ");
 
         string trail = line.Substring(line.IndexOf(" :", StringComparison.Ordinal) + 1);
-        
-        Console.WriteLine("Got trail: " + trail);
+        if(trail.StartsWith(':')) trail = trail.Substring(1);
 
         switch(command) {
             case "PING": {
                 this.Stream.RunIRCCommand(line.Replace("PING", "PONG"));
-                if(!connected) {
-                    this.Stream.RunIRCCommand("JOIN #asdjhkg");
-                    connected = true;
-                }
+                break;
+            }
+            case "002": // RPL_YOURHOST
+            case "003": // RPL_CREATED
+            case "004": // RPL_MYINFO
+            case "005": // RPL_BOUNCE
+            case "372": // RPL_MOTD
+            case "251": // RPL_LUSERCLIENT
+            case "PRIVMSG":
+            case "NOTICE": {
+                Console.WriteLine($"{command}: {trail}");
+                break;
+            }
+            case "001": { // Registered
+                Console.WriteLine($"Registered {this.ChatClient}!");
+                this.Stream.RunIRCCommand("JOIN #asdjhkg");
+                break;
+            }
+            case "433": { // ERR_NICKNAMEINUSE
+                this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Username += "_"}");
+                break;
+            }
+            case "JOIN": {
+                Console.WriteLine("Successfully joined " + split[2]);
                 break;
             }
             default: {
-                Console.WriteLine("Unknown command: " + command);
+                Console.WriteLine($"Unknown IRC command: '{command}'");
                 break;
             }
         }
