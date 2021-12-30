@@ -92,6 +92,8 @@ public class IRCGuild : IGuild {
                         if(userInChannel == null) channel.Users.Add(userInChannel = userFromMessage);
 
                         channel.MessageHistory.Add(new IRCMessage(userInChannel, trail));
+
+                        if(trail.StartsWith("!say ")) channel.SendMessage(trail.Substring(5));
                     }
                 }
                 

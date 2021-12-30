@@ -13,7 +13,7 @@ public class IRCChannel : IChannel {
     public List<IRCUser> Users { get; } = new();
 
     public Task<IMessage> SendMessage(string message) {
-        Guild.Stream.RunIRCCommand($"PRIVMSG {Name} {message}");
+        Guild.Stream.RunIRCCommand($"PRIVMSG {Name} :{message}");
         IRCMessage sentMessage = new(this.Guild.ChatClient.User, message);
         
         MessageHistory.Add(sentMessage);
@@ -24,7 +24,7 @@ public class IRCChannel : IChannel {
         return Task.FromResult<IEnumerable<IMessage>>(this.MessageHistory.Take(limit));
     }
     
-    public async Task<IEnumerable<IUser>> FetchUsers() {
-        throw new NotImplementedException();
+    public Task<IEnumerable<IUser>> FetchUsers() {
+        return Task.FromResult<IEnumerable<IUser>>(this.Users);
     }
 }
