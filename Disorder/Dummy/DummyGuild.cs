@@ -5,8 +5,8 @@ public class DummyGuild : IGuild {
     public long Id { get; set; } = new Random().Next();
 
     public IEnumerable<IChannel> Channels => new List<IChannel> {
-        new DummyChannel(),
-        new DummyChannel(),
+        new DummyChannel(this),
+        new DummyChannel(this),
     };
 
     private bool loggedIn = false;
@@ -17,4 +17,5 @@ public class DummyGuild : IGuild {
         }
     }
     public event EventHandler? OnLoggedIn;
+    public event EventHandler<IChannel>? ChannelAdded;
 }

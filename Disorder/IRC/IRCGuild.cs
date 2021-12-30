@@ -41,6 +41,7 @@ public class IRCGuild : IGuild {
     public string Name { get; set; }
     public long Id { get; set; }
     public event EventHandler? OnLoggedIn;
+    public event EventHandler<IChannel>? ChannelAdded;
 
     private readonly List<IRCChannel> channels = new();
 
@@ -90,8 +91,8 @@ public class IRCGuild : IGuild {
                         IRCUser? userInChannel = channel.Users.FirstOrDefault(u => u.Nickname == userFromMessage.Nickname);
                         
                         if(userInChannel == null) channel.Users.Add(userInChannel = userFromMessage);
-
-                        channel.MessageHistory.Add(new IRCMessage(userInChannel, trail));
+                        
+                        channel.AddMessageToHistory(new IRCMessage(userInChannel, trail));
 
                         if(trail.StartsWith("!say ")) channel.SendMessage(trail.Substring(5));
                     }
@@ -123,6 +124,7 @@ public class IRCGuild : IGuild {
                 joinedChannel.Users.Add(joinedUser);
 
                 this.channels.Add(joinedChannel);
+                this.ChannelAdded?.Invoke(this, joinedChannel);
 
                 Console.WriteLine($"{joinedUser} joined {joinedChannel}");
                 break;

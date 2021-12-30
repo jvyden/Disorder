@@ -8,6 +8,8 @@ namespace Disorder.Gui;
 public class MainForm : Form {
     public ListBox GuildList;
     public ListBox TextList;
+    public ListBox UserList;
+    public TextBox MessageField;
     
     private readonly List<IChatClient> chatClients = new() {
         new IRCChatClient("localhost"),
@@ -16,25 +18,35 @@ public class MainForm : Form {
     
     public MainForm() {
         this.Title = "Disorder";
-        this.ClientSize = new Size(800, 900);
+        this.ClientSize = new Size(1280, 960);
 
-        this.Content = new TableLayout {
+        DynamicLayout layout = new() {
             Spacing = new Size(5,5),
             Padding = new Padding(10),
-            Rows = {
-                new TableRow(
-                    new TableCell(this.GuildList = new ListBox())
-                ),
-                new TableRow(
-                    new TableCell(this.TextList = new ListBox())
-                ),
-            },
         };
+
+        layout.BeginHorizontal();
+        layout.Add(this.GuildList = new ListBox() { Size = new Size(200, -1)});
+        layout.BeginVertical();
+        layout.BeginHorizontal();
+        layout.Add(this.TextList = new ListBox(), true, true);
+        layout.Add(this.UserList = new ListBox());
+        layout.EndHorizontal();
+        layout.BeginHorizontal();
+        layout.Add(this.MessageField = new TextBox(), true);
+        layout.Add(new Button() {Text = "Send", MinimumSize = new Size(200, -1)});
+        layout.EndHorizontal();
+        layout.EndVertical();
+        layout.EndHorizontal();
+
+        this.Content = layout;
 
         ChatClientManager.Initialize(chatClients);
 
         foreach(IGuild guild in chatClients.SelectMany(chatClient => chatClient.Guilds)) {
             this.GuildList.Items.Add(new GuildListItem(guild));
+
+            guild.ChannelAdded += this.channelAddedToGuild;
         }
 
         this.GuildList.SelectedValueChanged += guildChanged;
@@ -44,13 +56,31 @@ public class MainForm : Form {
         if(listItem == null) return;
 
         Task.Factory.StartNew(async () => {
-            this.TextList.Items.Clear();
-            IEnumerable<IMessage> messages = await listItem.Guild.Channels.First().FetchMessages();
-            
-            foreach(IMessage message in messages) this.TextList.Items.Add(new MessageListItem(message));
-
-            Console.WriteLine("guild item changed to " + listItem.Text);
+            await this.RefreshMessages(listItem.Guild.Channels.First());
         });
+
+        Console.WriteLine("guild item changed to " + listItem.Text);
+    }
+
+    private void messageSentToCurrentChannel(object? sender, IMessage message) {
+        this.TextList.Items.Add(new MessageListItem(message));
+    }
+
+    private void channelAddedToGuild(object? sender, IChannel channel) {
+        channel.MessageSent += delegate(object? sender, IMessage message) {
+            GuildListItem? listItem = (GuildListItem?)this.GuildList.SelectedValue;
+            if(listItem == null) return;
+
+            if(channel.Guild == listItem.Guild) messageSentToCurrentChannel(sender, message);
+        };
+    } 
+
+    public async Task RefreshMessages(IChannel channel) {
+        this.TextList.Items.Clear();
+        IEnumerable<IMessage> messages = await channel.FetchMessages();
+
+        foreach(IMessage message in messages) this.TextList.Items.Add(new MessageListItem(message));
+        
     }
 
 }
