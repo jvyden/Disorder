@@ -14,7 +14,7 @@ public static class Program {
             foreach(IGuild guild in chatClients.First().Guilds) {
                 await guild.Process();
             }
-            await Task.Delay(25);
+            await Task.Delay(10);
         }
     }
 }

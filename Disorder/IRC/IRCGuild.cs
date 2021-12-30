@@ -79,7 +79,7 @@ public class IRCGuild : IGuild {
             case "251": // RPL_LUSERCLIENT
             case "PRIVMSG":
             case "NOTICE": {
-                Console.WriteLine($"{command}: {trail}");
+                Console.WriteLine($"({command}) {origin}: {trail}");
                 break;
             }
             case "001": { // Registered

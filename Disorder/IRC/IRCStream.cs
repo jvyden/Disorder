@@ -12,7 +12,7 @@ public class IRCStream {
     }
 
     public void RunIRCCommand(string text) {
-        this.stream.Write(Encoding.ASCII.GetBytes(text + "\r\n"));
+        this.stream.Write(Encoding.UTF8.GetBytes(text + "\r\n"));
         this.stream.Flush();
     }
 
@@ -35,6 +35,6 @@ public class IRCStream {
             buffer.Add(lastByte = (byte)thisByte);
         }
 
-        return Encoding.ASCII.GetString(buffer.ToArray()).TrimEnd();
+        return Encoding.UTF8.GetString(buffer.ToArray()).TrimEnd();
     }
 }

@@ -7,7 +7,7 @@ public class IRCChatClient : IChatClient {
 
     public IRCChatClient() {
         this.guilds = new List<IRCGuild> {
-            new("irc.volatile.bz", this),
+            new("localhost", this),
         };
     }
     
