@@ -42,7 +42,9 @@ public class IRCGuild : IGuild {
     public long Id { get; set; }
     public event EventHandler? OnLoggedIn;
 
-    public IEnumerable<IChannel> Channels => new List<IChannel>();
+    private readonly List<IRCChannel> channels = new();
+
+    public IEnumerable<IChannel> Channels => this.channels;
     
     public async Task Process() {
         List<string> lines = new();
@@ -81,6 +83,18 @@ public class IRCGuild : IGuild {
             case "251": // RPL_LUSERCLIENT
             case "PRIVMSG":
             case "NOTICE": {
+                if(command == "PRIVMSG") {
+                    IRCChannel? channel = this.channels.FirstOrDefault(c => c.Name == split[2]);
+                    if(channel != null) {
+                        IRCUser userFromMessage = IRCUser.FromCloak(origin);
+                        IRCUser? userInChannel = channel.Users.FirstOrDefault(u => u.Nickname == userFromMessage.Nickname);
+                        
+                        if(userInChannel == null) channel.Users.Add(userInChannel = userFromMessage);
+
+                        channel.MessageHistory.Add(new IRCMessage(userInChannel, trail));
+                    }
+                }
+                
                 Console.WriteLine($"({command}) {origin}: {trail}");
                 break;
             }
@@ -97,13 +111,21 @@ public class IRCGuild : IGuild {
                 break;
             }
             case "JOIN": {
-                IRCUser joinedUser = IRCUser.FromCloak(origin); 
+                string channelName = split[2].TrimStart(':');
+
+                IRCUser joinedUser = IRCUser.FromCloak(origin);
+                IRCChannel joinedChannel = new(this) {
+                    Name = channelName,
+                };
                 
-                Console.WriteLine($"{joinedUser} joined {split[2]}");
+                joinedChannel.Users.Add(joinedUser);
+
+                this.channels.Add(joinedChannel);
+
+                Console.WriteLine($"{joinedUser} joined {joinedChannel}");
                 break;
             }
             case "ERROR": {
-
                 Console.WriteLine("!!!!! IRC ERROR !!!!!");
                 Console.WriteLine($"{trail}");
                 break;

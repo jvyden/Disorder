@@ -13,10 +13,6 @@ public static class Program {
             new IRCChatClient(args[0]),
         };
 
-//        for(int i = 0; i < 100; i++) {
-//            chatClients.Add(new IRCChatClient(args[0]));
-//        }
-
         foreach(IChatClient chatClient in chatClients) {
             chatClientQueue.Enqueue(chatClient);
             foreach(IGuild guild in chatClient.Guilds) {
