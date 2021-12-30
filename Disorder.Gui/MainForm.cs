@@ -40,7 +40,7 @@ public class MainForm : Form {
         layout.EndVertical();
         layout.EndHorizontal();
 
-        this.MessageField.KeyDown += delegate(object? sender, KeyEventArgs args) {
+        this.MessageField.KeyDown += delegate(object? _, KeyEventArgs args) {
             if(args.Key == Keys.Enter) this.sendButtonClicked(this, args);
         };
 
@@ -50,41 +50,50 @@ public class MainForm : Form {
 
         foreach(IGuild guild in this.chatClients.SelectMany(chatClient => chatClient.Guilds)) {
             this.GuildList.Items.Add(new GuildListItem(guild));
-
             guild.ChannelAdded += this.channelAddedToGuild;
         }
 
-        this.GuildList.SelectedValueChanged += this.guildChanged;
+        this.GuildList.SelectedValueChanged += this.channelChanged;
     }
-    private void guildChanged(object? sender, EventArgs e) {
-        GuildListItem? listItem = (GuildListItem?)this.GuildList.SelectedValue;
-        if(listItem == null) return;
+    private void channelChanged(object? sender, EventArgs e) {
+        if(this.GuildList.SelectedValue is not ChannelListItem channelItem) {
+            this.UserList.Items.Clear();
+            this.TextList.Items.Clear();
+            return;
+        }
 
         Task.Factory.StartNew(async () => {
-            await this.RefreshMessages(listItem.Guild.Channels.First());
+            await this.RefreshMessages(channelItem.Channel);
         });
 
-        Console.WriteLine("guild item changed to " + listItem.Text);
+        Console.WriteLine("channel item changed to " + channelItem.Channel.Name);
     }
 
-    private void messageSentToCurrentChannel(object? sender, IMessage message) {
+    private void messageSentToCurrentChannel(IMessage message) {
         this.TextList.Items.Add(new MessageListItem(message));
     }
 
-    private void channelAddedToGuild(object? sender, IChannel channel) {
-        channel.MessageSent += delegate(object? sender, IMessage message) {
-            GuildListItem? listItem = (GuildListItem?)this.GuildList.SelectedValue;
-            if(listItem == null) return;
+    private void channelAddedToGuild(object? _, IChannel channel) {
+        GuildListItem guildListItem = (GuildListItem)this.GuildList.Items.First(i => {
+            if(i is GuildListItem guildListItem) {
+                return guildListItem.Guild == channel.Guild;
+            }
+            return false;
+        });
+        
+        this.GuildList.Items.Insert(this.GuildList.Items.IndexOf(guildListItem) + 1, new ChannelListItem(channel));
+        
+        channel.MessageSent += delegate(object? _, IMessage message) {
+            if(this.GuildList.SelectedValue is not ChannelListItem channelItem) return;
 
-            if(channel.Guild == listItem.Guild) this.messageSentToCurrentChannel(sender, message);
+            if(channelItem.Channel == channel) this.messageSentToCurrentChannel(message);
         };
     }
 
     private void sendButtonClicked(object? sender, EventArgs e) {
-        GuildListItem? listItem = (GuildListItem?)this.GuildList.SelectedValue;
-        if(listItem == null) return;
+        if(this.GuildList.SelectedValue is not ChannelListItem channelItem) return;
 
-        listItem.Guild.Channels.First().SendMessage(this.MessageField.Text);
+        channelItem.Channel.SendMessage(this.MessageField.Text);
         this.MessageField.Text = string.Empty;
     }
 
