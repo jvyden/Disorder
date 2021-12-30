@@ -1,6 +1,4 @@
-using System.Net;
-
-namespace Disorder.IRC; 
+namespace Disorder.IRC;
 
 public class IRCChatClient : IChatClient {
     private readonly List<IRCGuild> guilds;
@@ -10,7 +8,7 @@ public class IRCChatClient : IChatClient {
             new(uri, this),
         };
     }
-    
+
     public IEnumerable<IGuild> Guilds => this.guilds;
     public IUser User { get; } = new IRCUser();
 }

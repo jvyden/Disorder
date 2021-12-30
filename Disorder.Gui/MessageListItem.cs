@@ -1,10 +1,10 @@
 using Eto.Forms;
 
-namespace Disorder.Gui; 
+namespace Disorder.Gui;
 
 public class MessageListItem : ListItem {
     public IMessage Message;
-    
+
     public MessageListItem(IMessage message) {
         this.Message = message;
 

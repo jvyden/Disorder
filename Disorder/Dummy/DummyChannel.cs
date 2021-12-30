@@ -1,4 +1,4 @@
-namespace Disorder.Dummy; 
+namespace Disorder.Dummy;
 
 public class DummyChannel : IChannel {
     public DummyChannel(IGuild guild) {
@@ -10,8 +10,8 @@ public class DummyChannel : IChannel {
     public async Task<IMessage> SendMessage(string content) {
         DummyMessage message = new(new DummyUser(), content);
         Console.WriteLine($"Sending dummy message '{message}' to {this}");
-        
-        MessageSent?.Invoke(this, message);
+
+        this.MessageSent?.Invoke(this, message);
 
         return message;
     }

@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Eto.Forms" Version="2.6.0" />
-      <PackageReference Include="Eto.Platform.Gtk" Version="2.6.0" />
+        <PackageReference Include="Eto.Forms" Version="2.6.0"/>
+        <PackageReference Include="Eto.Platform.Gtk" Version="2.6.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Disorder\Disorder.csproj" />
+        <ProjectReference Include="..\Disorder\Disorder.csproj"/>
     </ItemGroup>
 
 </Project>

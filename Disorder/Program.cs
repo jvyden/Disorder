@@ -1,7 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Text;
-using Disorder.Dummy;
-using Disorder.IRC;
+﻿using Disorder.IRC;
 
 namespace Disorder;
 

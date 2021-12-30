@@ -1,10 +1,10 @@
 using Eto.Forms;
 
-namespace Disorder.Gui; 
+namespace Disorder.Gui;
 
 public class GuildListItem : ListItem {
     public IGuild Guild;
-    
+
     public GuildListItem(IGuild guild) {
         this.Guild = guild;
 

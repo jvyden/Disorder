@@ -1,4 +1,4 @@
-namespace Disorder.IRC; 
+namespace Disorder.IRC;
 
 public class IRCMessage : IMessage {
     public IRCMessage(IUser author, string content) {

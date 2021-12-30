@@ -1,4 +1,4 @@
-namespace Disorder.Dummy; 
+namespace Disorder.Dummy;
 
 public class DummyUser : IUser {
     public string Username { get; set; } = "Dummy User";

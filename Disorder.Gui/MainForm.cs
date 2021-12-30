@@ -3,30 +3,31 @@ using Disorder.IRC;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Disorder.Gui; 
+namespace Disorder.Gui;
 
 public class MainForm : Form {
-    public ListBox GuildList;
-    public ListBox TextList;
-    public ListBox UserList;
-    public TextBox MessageField;
-    
+
     private readonly List<IChatClient> chatClients = new() {
         new IRCChatClient("localhost"),
         new DummyChatClient(),
     };
-    
+
+    public readonly ListBox GuildList;
+    public readonly TextBox MessageField;
+    public readonly ListBox TextList;
+    public readonly ListBox UserList;
+
     public MainForm() {
         this.Title = "Disorder";
         this.ClientSize = new Size(1280, 960);
 
         DynamicLayout layout = new() {
-            Spacing = new Size(5,5),
+            Spacing = new Size(5, 5),
             Padding = new Padding(10),
         };
 
         layout.BeginHorizontal();
-        layout.Add(this.GuildList = new ListBox() { Size = new Size(200, -1)});
+        layout.Add(this.GuildList = new ListBox { Size = new Size(200, -1) });
         layout.BeginVertical();
         layout.BeginHorizontal();
         layout.Add(this.TextList = new ListBox(), true, true);
@@ -34,28 +35,26 @@ public class MainForm : Form {
         layout.EndHorizontal();
         layout.BeginHorizontal();
         layout.Add(this.MessageField = new TextBox(), true);
-        layout.Add(new Button(this.sendButtonClicked) {Text = "Send", MinimumSize = new Size(200, -1)});
+        layout.Add(new Button(this.sendButtonClicked) { Text = "Send", MinimumSize = new Size(200, -1) });
         layout.EndHorizontal();
         layout.EndVertical();
         layout.EndHorizontal();
-        
+
         this.MessageField.KeyDown += delegate(object? sender, KeyEventArgs args) {
-            if(args.Key == Keys.Enter) {
-                sendButtonClicked(this, args);
-            }
+            if(args.Key == Keys.Enter) this.sendButtonClicked(this, args);
         };
 
         this.Content = layout;
 
-        ChatClientManager.Initialize(chatClients);
+        ChatClientManager.Initialize(this.chatClients);
 
-        foreach(IGuild guild in chatClients.SelectMany(chatClient => chatClient.Guilds)) {
+        foreach(IGuild guild in this.chatClients.SelectMany(chatClient => chatClient.Guilds)) {
             this.GuildList.Items.Add(new GuildListItem(guild));
 
             guild.ChannelAdded += this.channelAddedToGuild;
         }
 
-        this.GuildList.SelectedValueChanged += guildChanged;
+        this.GuildList.SelectedValueChanged += this.guildChanged;
     }
     private void guildChanged(object? sender, EventArgs e) {
         GuildListItem? listItem = (GuildListItem?)this.GuildList.SelectedValue;
@@ -77,7 +76,7 @@ public class MainForm : Form {
             GuildListItem? listItem = (GuildListItem?)this.GuildList.SelectedValue;
             if(listItem == null) return;
 
-            if(channel.Guild == listItem.Guild) messageSentToCurrentChannel(sender, message);
+            if(channel.Guild == listItem.Guild) this.messageSentToCurrentChannel(sender, message);
         };
     }
 
@@ -94,7 +93,6 @@ public class MainForm : Form {
         IEnumerable<IMessage> messages = await channel.FetchMessages();
 
         foreach(IMessage message in messages) this.TextList.Items.Add(new MessageListItem(message));
-        
-    }
 
+    }
 }

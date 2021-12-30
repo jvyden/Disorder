@@ -1,8 +1,7 @@
-using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Disorder.IRC; 
+namespace Disorder.IRC;
 
 public class IRCStream {
     private readonly NetworkStream stream;
@@ -18,9 +17,7 @@ public class IRCStream {
 
     public string? ReadLine() {
         List<byte> buffer = new();
-        if(!this.stream.CanRead || !this.stream.DataAvailable) {
-            return null;
-        }
+        if(!this.stream.CanRead || !this.stream.DataAvailable) return null;
 
         byte lastByte = 0x00;
         while(this.stream.DataAvailable) { // While data is available, read
@@ -31,7 +28,7 @@ public class IRCStream {
                 buffer.Add((byte)thisByte);
                 break;
             }
-            
+
             buffer.Add(lastByte = (byte)thisByte);
         }
 

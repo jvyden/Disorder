@@ -1,15 +1,34 @@
-using System.Net;
 using System.Net.Sockets;
 
-namespace Disorder.IRC; 
+namespace Disorder.IRC;
 
 public class IRCGuild : IGuild {
-    public readonly string Uri;
-    internal readonly TcpClient Client;
+
+    private readonly List<IRCChannel> channels = new();
 
     public readonly IRCChatClient ChatClient;
+    internal readonly TcpClient Client;
+    public readonly string Uri;
 
     private IRCStream? stream;
+
+    public IRCGuild(string uri, IRCChatClient chatClient, bool ssl = false, string? name = null) {
+        this.Uri = uri;
+        this.ChatClient = chatClient;
+        this.Name = name ?? uri;
+
+        string[] uriSplit = this.Uri.Split(':');
+        string address = uriSplit[0];
+        int port;
+        if(uriSplit.Length != 2) port = ssl ? 6697 : 6667;
+        else port = int.Parse(uriSplit[1]);
+
+        this.Client = new TcpClient(address, port);
+
+        this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Nickname}");
+        this.Stream.RunIRCCommand($"USER {this.ChatClient.User.Username} * * :{this.ChatClient.User.Username}");
+    }
+
     internal IRCStream Stream {
         get {
             this.stream ??= new IRCStream(this.Client.GetStream());
@@ -17,39 +36,16 @@ public class IRCGuild : IGuild {
         }
     }
 
-    public IRCGuild(string uri, IRCChatClient chatClient, bool ssl = false, string? name = null) {
-        this.Uri = uri;
-        this.ChatClient = chatClient;
-        this.Name = name ?? uri;
-
-        string[] uriSplit = Uri.Split(':');
-        string address = uriSplit[0];
-        int port;
-        if(uriSplit.Length != 2) {
-            port = ssl ? 6697 : 6667;
-        }
-        else {
-            port = int.Parse(uriSplit[1]);
-        }
-        
-        this.Client = new TcpClient(address, port);
-
-        this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Nickname}");
-        this.Stream.RunIRCCommand($"USER {this.ChatClient.User.Username} * * :{this.ChatClient.User.Username}");
-    }
-    
     public string Name { get; set; }
     public long Id { get; set; }
     public event EventHandler? OnLoggedIn;
     public event EventHandler<IChannel>? ChannelAdded;
 
-    private readonly List<IRCChannel> channels = new();
-
     public IEnumerable<IChannel> Channels => this.channels;
-    
+
     public async Task Process() {
         List<string> lines = new();
-        
+
         string? readLine;
         while((readLine = this.Stream.ReadLine()) != null) lines.Add(readLine);
 
@@ -58,6 +54,7 @@ public class IRCGuild : IGuild {
 
     public void HandleLine(string line) {
         if(string.IsNullOrWhiteSpace(line) || line.StartsWith((char)0x00)) return;
+
         string[] split = line.Split(" ");
 
         string command = split[0].StartsWith(':') ? split[1] : split[0];
@@ -89,15 +86,15 @@ public class IRCGuild : IGuild {
                     if(channel != null) {
                         IRCUser userFromMessage = IRCUser.FromCloak(origin);
                         IRCUser? userInChannel = channel.Users.FirstOrDefault(u => u.Nickname == userFromMessage.Nickname);
-                        
+
                         if(userInChannel == null) channel.Users.Add(userInChannel = userFromMessage);
-                        
+
                         channel.AddMessageToHistory(new IRCMessage(userInChannel, trail));
 
                         if(trail.StartsWith("!say ")) channel.SendMessage(trail.Substring(5));
                     }
                 }
-                
+
                 Console.WriteLine($"({command}) {origin}: {trail}");
                 break;
             }
@@ -120,7 +117,7 @@ public class IRCGuild : IGuild {
                 IRCChannel joinedChannel = new(this) {
                     Name = channelName,
                 };
-                
+
                 joinedChannel.Users.Add(joinedUser);
 
                 this.channels.Add(joinedChannel);
