@@ -7,4 +7,6 @@ public interface IChannel {
     public Task<IMessage> SendMessage(string message);
 
     public Task<IEnumerable<IMessage>> FetchMessages(int limit = 50);
+
+    public Task<IEnumerable<IUser>> FetchUsers();
 }

@@ -5,9 +5,9 @@ namespace Disorder.IRC;
 public class IRCChatClient : IChatClient {
     private readonly List<IRCGuild> guilds;
 
-    public IRCChatClient() {
-        this.guilds = new List<IRCGuild> {
-            new("localhost", this),
+    public IRCChatClient(string uri) {
+        this.guilds = new List<IRCGuild>(1) {
+            new(uri, this),
         };
     }
     

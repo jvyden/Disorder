@@ -7,4 +7,6 @@ public interface IGuild {
     public IEnumerable<IChannel> Channels { get; }
 
     public Task Process();
+
+    public event EventHandler OnLoggedIn;
 }

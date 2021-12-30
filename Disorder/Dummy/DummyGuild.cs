@@ -9,7 +9,12 @@ public class DummyGuild : IGuild {
         new DummyChannel(),
     };
 
+    private bool loggedIn = false;
     public async Task Process() {
-        
+        if(!this.loggedIn && this.OnLoggedIn != null) {
+            this.OnLoggedIn?.Invoke(this, null);
+            this.loggedIn = true;
+        }
     }
+    public event EventHandler? OnLoggedIn;
 }

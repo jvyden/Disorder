@@ -34,11 +34,13 @@ public class IRCGuild : IGuild {
         
         this.Client = new TcpClient(address, port);
 
-        this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Username}");
+        this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Nickname}");
         this.Stream.RunIRCCommand($"USER {this.ChatClient.User.Username} * * :{this.ChatClient.User.Username}");
     }
+    
     public string Name { get; set; }
     public long Id { get; set; }
+    public event EventHandler? OnLoggedIn;
 
     public IEnumerable<IChannel> Channels => new List<IChannel>();
     
@@ -83,18 +85,27 @@ public class IRCGuild : IGuild {
                 break;
             }
             case "001": { // Registered
-                Console.WriteLine($"Registered {this.ChatClient}!");
+                this.OnLoggedIn?.Invoke(this, null);
                 this.Stream.RunIRCCommand("JOIN #asdjhkg");
                 break;
             }
+            case "432":
             case "433": { // ERR_NICKNAMEINUSE
-                this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Username += "_"}");
+                Console.WriteLine($"Nick invalid, changing... ({command} :{trail})");
+                this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Nickname + new Random().Next(0, 999)}");
+                this.Stream.RunIRCCommand("JOIN #asdjhkg");
                 break;
             }
             case "JOIN": {
                 IRCUser joinedUser = IRCUser.FromCloak(origin); 
                 
                 Console.WriteLine($"{joinedUser} joined {split[2]}");
+                break;
+            }
+            case "ERROR": {
+
+                Console.WriteLine("!!!!! IRC ERROR !!!!!");
+                Console.WriteLine($"{trail}");
                 break;
             }
             default: {

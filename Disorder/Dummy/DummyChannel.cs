@@ -17,6 +17,15 @@ public class DummyChannel : IChannel {
             new DummyMessage(new DummyUser(), new Random().Next().ToString()),
         };
     }
+    public async Task<IEnumerable<IUser>> FetchUsers() {
+        return new List<IUser> {
+            new DummyUser(),
+            new DummyUser(),
+            new DummyUser(),
+            new DummyUser(),
+            new DummyUser(),
+        };
+    }
 
     public override string ToString() {
         return $"DummyChannel (Name: {this.Name}, Id: {this.Id})";
