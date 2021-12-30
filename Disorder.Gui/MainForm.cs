@@ -34,10 +34,16 @@ public class MainForm : Form {
         layout.EndHorizontal();
         layout.BeginHorizontal();
         layout.Add(this.MessageField = new TextBox(), true);
-        layout.Add(new Button() {Text = "Send", MinimumSize = new Size(200, -1)});
+        layout.Add(new Button(this.sendButtonClicked) {Text = "Send", MinimumSize = new Size(200, -1)});
         layout.EndHorizontal();
         layout.EndVertical();
         layout.EndHorizontal();
+        
+        this.MessageField.KeyDown += delegate(object? sender, KeyEventArgs args) {
+            if(args.Key == Keys.Enter) {
+                sendButtonClicked(this, args);
+            }
+        };
 
         this.Content = layout;
 
@@ -73,7 +79,15 @@ public class MainForm : Form {
 
             if(channel.Guild == listItem.Guild) messageSentToCurrentChannel(sender, message);
         };
-    } 
+    }
+
+    private void sendButtonClicked(object? sender, EventArgs e) {
+        GuildListItem? listItem = (GuildListItem?)this.GuildList.SelectedValue;
+        if(listItem == null) return;
+
+        listItem.Guild.Channels.First().SendMessage(this.MessageField.Text);
+        this.MessageField.Text = string.Empty;
+    }
 
     public async Task RefreshMessages(IChannel channel) {
         this.TextList.Items.Clear();
