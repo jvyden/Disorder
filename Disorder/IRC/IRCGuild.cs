@@ -63,6 +63,9 @@ public class IRCGuild : IGuild {
         string trail = line.Substring(line.IndexOf(" :", StringComparison.Ordinal) + 1);
         if(trail.StartsWith(':')) trail = trail.Substring(1);
 
+        string origin = string.Empty;
+        if(split[0].StartsWith(':')) origin = split[0].Substring(1);
+
         switch(command) {
             case "PING": {
                 this.Stream.RunIRCCommand(line.Replace("PING", "PONG"));
@@ -89,7 +92,9 @@ public class IRCGuild : IGuild {
                 break;
             }
             case "JOIN": {
-                Console.WriteLine("Successfully joined " + split[2]);
+                IRCUser joinedUser = IRCUser.FromCloak(origin); 
+                
+                Console.WriteLine($"{joinedUser} joined {split[2]}");
                 break;
             }
             default: {
