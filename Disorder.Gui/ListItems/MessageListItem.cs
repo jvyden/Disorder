@@ -1,6 +1,6 @@
 using Eto.Forms;
 
-namespace Disorder.Gui;
+namespace Disorder.Gui.ListItems;
 
 public class MessageListItem : ListItem {
     public IMessage Message;
