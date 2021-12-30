@@ -3,8 +3,6 @@ using Disorder.Gui.ListItems;
 using Disorder.IRC;
 using Eto.Drawing;
 using Eto.Forms;
-using Button = Eto.Forms.Button;
-using ListBox = Eto.Forms.ListBox;
 
 namespace Disorder.Gui.Forms;
 
@@ -32,6 +30,10 @@ public class MainForm : Form {
         this.Menu = new MenuBar {
             Items = {
                 new ButtonMenuItem { Text = "File", Items = {
+                    new Command((_, _) => new SettingsForm().Show()) {
+                        MenuText = "Settings",
+                        Shortcut = Application.Instance.CommonModifier | Keys.Comma,
+                    },
                     new Command((_,_) => Application.Instance.Quit()) {
                         MenuText = "Exit",
                         Shortcut = Application.Instance.CommonModifier | Keys.Q,
