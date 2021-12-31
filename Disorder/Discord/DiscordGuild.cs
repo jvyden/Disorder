@@ -1,4 +1,5 @@
 using Discord;
+using Kettu;
 
 namespace Disorder.Discord; 
 
@@ -24,7 +25,7 @@ public class DiscordGuild : IGuild {
                             Id = (long)textChannel.Id,
                             Name = "#" + textChannel.Name,
                         };
-                        Console.WriteLine("Constructed channel " + channel.Name + channel.Id);
+                        Logger.Log("Constructed channel " + channel.Name + channel.Id, LoggerLevelDiscordInfo.Instance);
                         this.ChannelAdded?.Invoke(null, channel);
                     }
                 }

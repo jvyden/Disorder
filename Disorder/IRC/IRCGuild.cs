@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using Kettu;
 
 namespace Disorder.IRC;
 
@@ -105,7 +106,7 @@ public class IRCGuild : IGuild {
                     }
                 }
 
-                Console.WriteLine($"({command}) {origin}: {trail}");
+                Logger.Log($"({command}) {origin}: {trail}", LoggerLevelIRCInfo.Instance);
                 break;
             }
             case "001": { // Registered
@@ -118,7 +119,7 @@ public class IRCGuild : IGuild {
             }
             case "432":
             case "433": { // ERR_NICKNAMEINUSE
-                Console.WriteLine($"Nick invalid, changing... ({command} :{trail})");
+                Logger.Log($"Nick invalid, changing... ({command} :{trail})", LoggerLevelIRCInfo.Instance);
                 this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Nickname + new Random().Next(0, 999)}");
                 Task.Factory.StartNew(() => {
                     Thread.Sleep(1000);
@@ -145,12 +146,11 @@ public class IRCGuild : IGuild {
                 
                 if(this.Users.FirstOrDefault(u => Equals(u, joinedUser)) == null) this.Users.Add(joinedUser);
 
-                Console.WriteLine($"{joinedUser} joined {joinedChannel}");
+                Logger.Log($"{joinedUser} joined {joinedChannel}", LoggerLevelIRCInfo.Instance);
                 break;
             }
             case "ERROR": {
-                Console.WriteLine("!!!!! IRC ERROR !!!!!");
-                Console.WriteLine($"{trail}");
+                Logger.Log(trail, LoggerLevelIRCError.Instance);
                 break;
             }
             case "NICK": {
@@ -164,7 +164,7 @@ public class IRCGuild : IGuild {
                 break;
             }
             default: {
-                Console.WriteLine($"Unknown IRC command: '{command}'");
+                Logger.Log($"Unknown IRC command: '{command}'", LoggerLevelIRCWarning.Instance);
                 break;
             }
         }

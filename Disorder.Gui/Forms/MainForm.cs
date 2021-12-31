@@ -4,6 +4,7 @@ using Disorder.Gui.ListItems;
 using Disorder.IRC;
 using Eto.Drawing;
 using Eto.Forms;
+using Kettu;
 
 namespace Disorder.Gui.Forms;
 
@@ -13,7 +14,7 @@ public class MainForm : Form {
 
     private readonly List<IChatClient> chatClients = new() {
         new IRCChatClient(Settings.Instance.IrcServerUrl),
-        new DiscordChatClient(Settings.Instance.DiscordToken),
+        // new DiscordChatClient(Settings.Instance.DiscordToken),
         new DummyChatClient(),
     };
 
@@ -22,8 +23,17 @@ public class MainForm : Form {
     public readonly ListBox TextList;
     public readonly ListBox UserList;
 
+    protected override void Dispose(bool disposing) {
+        Logger.StopLogging().Wait();
+        
+        base.Dispose(disposing);
+    }
+
     public MainForm() {
-        Console.WriteLine("Constructing main form");
+        Logger.AddLogger(new ConsoleLogger());
+        Logger.StartLogging();
+        
+        Logger.Log("Constructing main form", LoggerLevelGUIInfo.Instance);
         
         this.Title = "Disorder";
         this.ClientSize = new Size(1280, 960);
@@ -90,7 +100,7 @@ public class MainForm : Form {
             await this.RefreshMessages(channelItem.Channel);
         });
 
-        Console.WriteLine("channel item changed to " + channelItem.Channel.Name);
+        Logger.Log("channel item changed to " + channelItem.Channel.Name, LoggerLevelGUIInfo.Instance);
     }
 
     private void guildsUpdated(object? sender, EventArgs e) {

@@ -1,3 +1,6 @@
+using Disorder.Gui.Forms;
+using Kettu;
+
 namespace Disorder.Gui.Settings.Layouts;
 using Disorder;
 
@@ -7,7 +10,7 @@ public class IRCSettingsLayout : SettingsLayout {
     }
 
     private void ipChanged(object? _, string text) {
-        Console.WriteLine("text changed to " + text);
+        Logger.Log("text changed to " + text, LoggerLevelGUIInfo.Instance);
         Settings.Instance.IrcServerUrl = text;
     }
 }

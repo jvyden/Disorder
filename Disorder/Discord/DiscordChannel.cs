@@ -1,4 +1,5 @@
 using Discord;
+using Kettu;
 
 namespace Disorder.Discord; 
 
@@ -20,14 +21,14 @@ public class DiscordChannel : IChannel {
     
     public event EventHandler<IMessage>? MessageSent;
     public async Task<IEnumerable<IMessage>> FetchMessages(int limit = 50) {
-        Console.WriteLine("Fetching messages");
+        Logger.Log("Fetching messages", LoggerLevelDiscordInfo.Instance);
         IReadOnlyList<global::Discord.DiscordMessage>? messages = await this.Channel.GetMessagesAsync(new MessageFilters {
             Limit = (uint?)limit,
         });
 
         List<DiscordMessage> outMessages = new();
         if(messages != null) {
-            if(messages.Count == 0) Console.WriteLine("No messages in response");
+            if(messages.Count == 0) Logger.Log("No messages in response", LoggerLevelDiscordInfo.Instance);
             foreach(global::Discord.DiscordMessage discordMessage in messages.OrderBy(m => m.SentAt)) {
                 DiscordUser author = new(discordMessage.Author.User) {
                     Nickname = discordMessage.Author.User.Username,
@@ -43,7 +44,7 @@ public class DiscordChannel : IChannel {
             }
         }
         else {
-            Console.WriteLine("Messages null");
+            Logger.Log("Messages null", LoggerLevelDiscordWarning.Instance);
         }
         return outMessages;
     }

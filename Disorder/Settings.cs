@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Kettu;
 
 namespace Disorder; 
 
@@ -26,7 +27,7 @@ public class Settings {
 
             if(Instance.ConfigVersion >= CurrentConfigVersion) return;
 
-            Console.WriteLine($"Upgrading config file from version {Instance.ConfigVersion} to version {CurrentConfigVersion}");
+            Logger.Log($"Upgrading config file from version {Instance.ConfigVersion} to version {CurrentConfigVersion}", LoggerLevelDisorderInfo.Instance);
             Instance.ConfigVersion = CurrentConfigVersion;
             configFile = JsonSerializer.Serialize
             (
@@ -43,11 +44,12 @@ public class Settings {
             Instance = new Settings();
             Instance.Save();
             
-            Console.WriteLine
+            Logger.Log
             (
                 "The configuration file was not found. " +
                 "A blank configuration file has been created at " +
-                ConfigFile + "."
+                ConfigFile + ".",
+                LoggerLevelDisorderInfo.Instance
             );
         }
     }

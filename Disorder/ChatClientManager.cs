@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
+using Disorder.Dummy;
 using GLib;
+using Kettu;
 
 namespace Disorder;
 
@@ -16,12 +18,12 @@ public static class ChatClientManager {
             chatClientQueue.Enqueue(chatClient);
             foreach(IGuild guild in chatClient.Guilds)
                 guild.OnLoggedIn += delegate {
-                    Console.WriteLine($"{guild} logged in as {chatClient.User}");
+                    Logger.Log($"{guild} logged in as {chatClient.User}", LoggerLevelDummyInfo.Instance);
                 };
         }
 
         int threads = Math.Min(Environment.ProcessorCount, chatClients.Count);
-        Console.WriteLine($"Spinning up {threads} worker threads");
+        Logger.Log($"Spinning up {threads} worker threads", LoggerLevelDummyInfo.Instance);
 
         for(int i = 0; i < threads; i++)
             Task.Factory.StartNew(async () => {
@@ -33,7 +35,7 @@ public static class ChatClientManager {
     }
 
     private static void onExit(object? sender, EventArgs e) {
-        Console.WriteLine("Exiting safely...");
+        Logger.Log("Exiting safely...", LoggerLevelDummyInfo.Instance);
         Settings.Instance.Save();
     }
 
@@ -41,7 +43,10 @@ public static class ChatClientManager {
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if(chatClientQueue.TryDequeue(out IChatClient? chatClient) && chatClient != null) // Process every guild in every chat client
             try {
-                foreach(IGuild guild in chatClient.Guilds) await guild.Process();
+                foreach (IGuild guild in chatClient.Guilds) await guild.Process();
+            }
+            catch(Exception ex) {
+                Logger.Log($"{ex.GetType()} occured during processing {chatClient.GetType()}!", LoggerLevelDisorderError.Instance);
             }
             finally {
                 chatClientQueue.Enqueue(chatClient);
