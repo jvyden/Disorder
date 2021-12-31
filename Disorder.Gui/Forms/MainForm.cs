@@ -50,7 +50,7 @@ public class MainForm : Form {
         };
 
         layout.BeginHorizontal();
-        layout.Add(this.GuildList = new ListBox { Size = new Size(200, -1) });
+        layout.Add(this.GuildList = new ListBox { Size = new Size(250, -1) });
         layout.BeginVertical();
         layout.BeginHorizontal();
         layout.Add(this.TextList = new ListBox(), true, true);
