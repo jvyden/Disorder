@@ -1,9 +1,12 @@
 namespace Disorder.Dummy;
 
 public class DummyChatClient : IChatClient {
-    public IEnumerable<IGuild> Guilds => new List<IGuild> {
+    
+    private IEnumerable<IGuild> guilds = new List<IGuild> {
         new DummyGuild(),
     };
+
+    public IEnumerable<IGuild> Guilds => guilds;
 
     public IUser User { get; } = new DummyUser();
 }
