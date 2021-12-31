@@ -16,7 +16,7 @@ public class SettingsForm : Form {
         this.Title = "Disorder - Settings";
         this.ClientSize = new Size(1000, 600);
         
-        this.KeyDown += delegate(object? sender, KeyEventArgs args) {
+        this.KeyDown += delegate(object? _, KeyEventArgs args) {
             if(args.Key == Keys.Escape) this.Close();
         };
 
@@ -37,6 +37,7 @@ public class SettingsForm : Form {
     
     private void categoryChanged(object sender, EventArgs e) {
         this.SettingsLayout = ((SettingsLayoutListItem)this.CategoryList.SelectedValue).SettingsLayout;
+        this.SettingsLayout.Add(null); // Null element makes it so the last element doesn't stretch on the y axis
         
         this.redoLayout();
     }
