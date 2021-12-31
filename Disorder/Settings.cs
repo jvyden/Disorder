@@ -11,7 +11,7 @@ public class Settings {
 
     public static readonly string ConfigFile = Path.Combine(ConfigPath, configFileName);
 
-    public const int CurrentConfigVersion = 1; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
+    public const int CurrentConfigVersion = 2; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
 
     [JsonPropertyName("ConfigVersionDoNotModifyOrYouWillBeSlapped")]
     public int ConfigVersion { get; set; } = CurrentConfigVersion;
@@ -68,4 +68,6 @@ public class Settings {
     public string IrcServerUrl { get; set; } = "localhost";
     public string IrcUsername { get; set; } = Environment.UserName;
     public string IrcAutoJoinList { get; set; } = "#general";
+    
+    public string DiscordToken { get; set; }
 }

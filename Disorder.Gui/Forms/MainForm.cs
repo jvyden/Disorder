@@ -1,3 +1,4 @@
+using Disorder.Discord;
 using Disorder.Dummy;
 using Disorder.Gui.ListItems;
 using Disorder.IRC;
@@ -11,8 +12,9 @@ using Disorder;
 public class MainForm : Form {
 
     private readonly List<IChatClient> chatClients = new() {
-        new IRCChatClient(Settings.Instance.IrcServerUrl),
-        new DummyChatClient(),
+//        new IRCChatClient(Settings.Instance.IrcServerUrl),
+        new DiscordChatClient(Settings.Instance.DiscordToken),
+//        new DummyChatClient(),
     };
 
     public readonly ListBox GuildList;
@@ -21,6 +23,8 @@ public class MainForm : Form {
     public readonly ListBox UserList;
 
     public MainForm() {
+        Console.WriteLine("Constructing main form");
+        
         this.Title = "Disorder";
         this.ClientSize = new Size(1280, 960);
 
