@@ -27,7 +27,7 @@ public class IRCChannel : IChannel {
     public event EventHandler<IMessage>? MessageSent;
 
     public Task<IEnumerable<IMessage>> FetchMessages(int limit = 50) {
-        return Task.FromResult<IEnumerable<IMessage>>(this.MessageHistory.Take(limit));
+        return Task.FromResult<IEnumerable<IMessage>>((IEnumerable<IMessage>)this.MessageHistory.Take(limit));
     }
 
     public Task<IEnumerable<IUser>> FetchUsers() {
