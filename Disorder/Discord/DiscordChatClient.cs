@@ -10,6 +10,8 @@ public class DiscordChatClient : IChatClient {
     public DiscordChatClient(string token) {
         this.token = token;
 
+        // Dirty hack to fix gui
+        // TODO: find the actual problem
         Task.Factory.StartNew(() => {
             this.Client = new DiscordClient(token, new DiscordConfig {
                 RetryOnRateLimit = false,
@@ -23,8 +25,9 @@ public class DiscordChatClient : IChatClient {
 
                 this.guilds.Add(guild);
             }
-            GuildsUpdated?.Invoke(this, null);
-        });
+        }).Wait();
+        
+        GuildsUpdated?.Invoke(this, null);
     }
     
     private List<DiscordGuild> guilds = new();

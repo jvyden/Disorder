@@ -76,6 +76,8 @@ public class MainForm : Form {
         }
 
         this.GuildList.SelectedValueChanged += this.channelChanged;
+        
+        this.guildsUpdated(this, null);
     }
     private void channelChanged(object? sender, EventArgs e) {
         if(this.GuildList.SelectedValue is not ChannelListItem channelItem) {
