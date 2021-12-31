@@ -22,7 +22,7 @@ public class DiscordGuild : IGuild {
                     if(guildChannel is TextChannel textChannel) {
                         DiscordChannel channel = new(textChannel, this) {
                             Id = (long)textChannel.Id,
-                            Name = textChannel.Name,
+                            Name = "#" + textChannel.Name,
                         };
                         Console.WriteLine("Constructed channel " + channel.Name + channel.Id);
                         this.ChannelAdded?.Invoke(null, channel);
