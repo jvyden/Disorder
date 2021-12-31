@@ -54,6 +54,14 @@ public class IRCGuild : IGuild {
         foreach(string line in lines) this.HandleLine(line);
     }
 
+    private void autoJoin() {
+        string[] autoJoinChannels = Settings.Instance.IrcAutoJoinList.Split(',');
+
+        foreach(string channel in autoJoinChannels) {
+            this.Stream.RunIRCCommand("JOIN " + channel.Trim());
+        }
+    }
+
     public void HandleLine(string line) {
         if(string.IsNullOrWhiteSpace(line) || line.StartsWith((char)0x00)) return;
 
@@ -102,17 +110,20 @@ public class IRCGuild : IGuild {
             }
             case "001": { // Registered
                 this.OnLoggedIn?.Invoke(this, null);
-                this.Stream.RunIRCCommand("JOIN #asdjhkg");
-                this.ChatClient.User = IRCUser.FromCloak(trail.Replace("Welcome to the Internet Relay Network ", ""));
                 
+                this.ChatClient.User = IRCUser.FromCloak(trail.Replace("Welcome to the Internet Relay Network ", ""));
                 this.Users.Add((IRCUser)this.ChatClient.User);
+                this.autoJoin();
                 break;
             }
             case "432":
             case "433": { // ERR_NICKNAMEINUSE
                 Console.WriteLine($"Nick invalid, changing... ({command} :{trail})");
                 this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Nickname + new Random().Next(0, 999)}");
-                this.Stream.RunIRCCommand("JOIN #asdjhkg");
+                Task.Factory.StartNew(() => {
+                    Thread.Sleep(1000);
+                    this.autoJoin();
+                });
                 break;
             }
             case "JOIN": {

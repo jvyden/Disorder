@@ -63,4 +63,5 @@ public class Settings {
 
     public string IrcServerUrl { get; set; } = "localhost";
     public string IrcUsername { get; set; } = Environment.UserName;
+    public string IrcAutoJoinList { get; set; } = "#general";
 }
