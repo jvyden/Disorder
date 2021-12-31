@@ -10,5 +10,5 @@ public class IRCChatClient : IChatClient {
     }
 
     public IEnumerable<IGuild> Guilds => this.guilds;
-    public IUser User { get; } = new IRCUser();
+    public IUser User { get; internal set; } = new IRCUser();
 }

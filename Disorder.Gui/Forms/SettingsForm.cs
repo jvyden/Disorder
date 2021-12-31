@@ -4,7 +4,6 @@ using Disorder.Gui.Settings;
 using Disorder.Gui.Settings.Layouts;
 using Eto.Drawing;
 using Eto.Forms;
-using GLib;
 
 namespace Disorder.Gui.Forms; 
 
@@ -21,8 +20,8 @@ public class SettingsForm : Form {
         };
 
         List<SettingsLayout> settingsLayouts = new() {
-            new GeneralLayout(),
-            new SettingsLayout("IRC"),
+            new GeneralSettingsLayout(),
+            new IRCSettingsLayout(),
         };
 
         this.CategoryList = new ListBox { Size = new Size(200, -1) };
@@ -35,7 +34,7 @@ public class SettingsForm : Form {
         this.CategoryList.SelectedValueChanged += categoryChanged;
     }
     
-    private void categoryChanged(object sender, EventArgs e) {
+    private void categoryChanged(object? sender, EventArgs e) {
         this.SettingsLayout = ((SettingsLayoutListItem)this.CategoryList.SelectedValue).SettingsLayout;
         this.SettingsLayout.Add(null); // Null element makes it so the last element doesn't stretch on the y axis
         

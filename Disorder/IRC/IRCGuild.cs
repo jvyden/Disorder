@@ -43,6 +43,8 @@ public class IRCGuild : IGuild {
 
     public IEnumerable<IChannel> Channels => this.channels;
 
+    public List<IRCUser> Users = new();
+
     public async Task Process() {
         List<string> lines = new();
 
@@ -101,6 +103,9 @@ public class IRCGuild : IGuild {
             case "001": { // Registered
                 this.OnLoggedIn?.Invoke(this, null);
                 this.Stream.RunIRCCommand("JOIN #asdjhkg");
+                this.ChatClient.User = IRCUser.FromCloak(trail.Replace("Welcome to the Internet Relay Network ", ""));
+                
+                this.Users.Add((IRCUser)this.ChatClient.User);
                 break;
             }
             case "432":
@@ -127,12 +132,24 @@ public class IRCGuild : IGuild {
 
                 joinedChannel.Users.Add(joinedUser);
                 
+                if(this.Users.FirstOrDefault(u => Equals(u, joinedUser)) == null) this.Users.Add(joinedUser);
+
                 Console.WriteLine($"{joinedUser} joined {joinedChannel}");
                 break;
             }
             case "ERROR": {
                 Console.WriteLine("!!!!! IRC ERROR !!!!!");
                 Console.WriteLine($"{trail}");
+                break;
+            }
+            case "NICK": {
+                IRCUser oldUser = IRCUser.FromCloak(origin);
+
+                IRCUser? userInGuild = this.Users.FirstOrDefault(u => u.Username == oldUser.Username);
+                if(userInGuild == null) return;
+
+                userInGuild.Nickname = trail;
+
                 break;
             }
             default: {

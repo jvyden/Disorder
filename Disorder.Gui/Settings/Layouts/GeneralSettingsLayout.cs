@@ -2,8 +2,8 @@ using Eto.Forms;
 
 namespace Disorder.Gui.Settings.Layouts; 
 
-public class GeneralLayout : SettingsLayout {
-    public GeneralLayout() : base("General") {
+public class GeneralSettingsLayout : SettingsLayout {
+    public GeneralSettingsLayout() : base("General") {
         this.Add(new FiringCheckBox(this.doThingsChecked) { Text = "Do things" });
     }
 

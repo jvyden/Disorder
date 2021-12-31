@@ -6,10 +6,12 @@ using Eto.Forms;
 
 namespace Disorder.Gui.Forms;
 
+using Disorder;
+
 public class MainForm : Form {
 
     private readonly List<IChatClient> chatClients = new() {
-        new IRCChatClient("localhost"),
+        new IRCChatClient(Settings.Instance.IrcServerUrl),
         new DummyChatClient(),
     };
 
