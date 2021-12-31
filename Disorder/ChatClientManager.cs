@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
+using GLib;
 
 namespace Disorder;
+
 
 public static class ChatClientManager {
     private static readonly ConcurrentQueue<IChatClient> chatClientQueue = new();
@@ -8,6 +10,7 @@ public static class ChatClientManager {
     public static void Initialize(List<IChatClient> chatClients) {
         AppDomain.CurrentDomain.ProcessExit += onExit;
         AppDomain.CurrentDomain.UnhandledException += onExit;
+        GLib.ExceptionManager.UnhandledException += onExit;
         
         foreach(IChatClient chatClient in chatClients) {
             chatClientQueue.Enqueue(chatClient);
@@ -24,6 +27,9 @@ public static class ChatClientManager {
             Task.Factory.StartNew(async () => {
                 while(true) await processQueue();
             });
+    }
+    private static void onExit(UnhandledExceptionArgs args) {
+        onExit(null, args);
     }
 
     private static void onExit(object? sender, EventArgs e) {

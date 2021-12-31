@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <PackageReference Include="Anarchy-wrapper" Version="0.8.1.1" />
+      <PackageReference Include="GLibSharp" Version="3.24.24.34" />
       <PackageReference Include="Leaf.xNet" Version="5.2.10" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     </ItemGroup>

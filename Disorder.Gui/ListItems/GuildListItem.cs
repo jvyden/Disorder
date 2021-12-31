@@ -8,6 +8,6 @@ public class GuildListItem : ListItem {
     public GuildListItem(IGuild guild) {
         this.Guild = guild;
 
-        this.Text = $"{guild.GetType().Name} - {guild.Name}";
+        this.Text = $"{guild.GetType().Name.Replace("Guild", "")} - {guild.Name}";
     }
 }

@@ -12,9 +12,9 @@ using Disorder;
 public class MainForm : Form {
 
     private readonly List<IChatClient> chatClients = new() {
-//        new IRCChatClient(Settings.Instance.IrcServerUrl),
+        new IRCChatClient(Settings.Instance.IrcServerUrl),
         new DiscordChatClient(Settings.Instance.DiscordToken),
-//        new DummyChatClient(),
+        new DummyChatClient(),
     };
 
     public readonly ListBox GuildList;
@@ -70,10 +70,9 @@ public class MainForm : Form {
         this.Content = layout;
 
         ChatClientManager.Initialize(this.chatClients);
-
-        foreach(IGuild guild in this.chatClients.SelectMany(chatClient => chatClient.Guilds)) {
-            this.GuildList.Items.Add(new GuildListItem(guild));
-            guild.ChannelAdded += this.channelAddedToGuild;
+        
+        foreach(IChatClient chatClient in this.chatClients) {
+            chatClient.GuildsUpdated += this.guildsUpdated;
         }
 
         this.GuildList.SelectedValueChanged += this.channelChanged;
@@ -90,6 +89,15 @@ public class MainForm : Form {
         });
 
         Console.WriteLine("channel item changed to " + channelItem.Channel.Name);
+    }
+
+    private void guildsUpdated(object? sender, EventArgs e) {
+        this.GuildList.Items.Clear();
+        
+        foreach(IGuild guild in this.chatClients.SelectMany(chatClient => chatClient.Guilds)) {
+            this.GuildList.Items.Add(new GuildListItem(guild));
+            guild.ChannelAdded += this.channelAddedToGuild;
+        }
     }
 
     private void messageSentToCurrentChannel(IMessage message) {

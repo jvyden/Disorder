@@ -23,6 +23,7 @@ public class DiscordChatClient : IChatClient {
 
                 this.guilds.Add(guild);
             }
+            GuildsUpdated?.Invoke(this, null);
         });
     }
     
@@ -30,4 +31,5 @@ public class DiscordChatClient : IChatClient {
 
     public IEnumerable<IGuild> Guilds => guilds;
     public IUser User { get; }
+    public event EventHandler? GuildsUpdated;
 }

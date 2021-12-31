@@ -25,6 +25,7 @@ public class DiscordGuild : IGuild {
                             Name = textChannel.Name,
                         };
                         Console.WriteLine("Constructed channel " + channel.Name + channel.Id);
+                        this.ChannelAdded?.Invoke(null, channel);
                     }
                 }
             }

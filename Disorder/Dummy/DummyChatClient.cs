@@ -9,4 +9,5 @@ public class DummyChatClient : IChatClient {
     public IEnumerable<IGuild> Guilds => guilds;
 
     public IUser User { get; } = new DummyUser();
+    public event EventHandler? GuildsUpdated;
 }
