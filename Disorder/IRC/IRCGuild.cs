@@ -114,15 +114,19 @@ public class IRCGuild : IGuild {
                 string channelName = split[2].TrimStart(':');
 
                 IRCUser joinedUser = IRCUser.FromCloak(origin);
-                IRCChannel joinedChannel = new(this) {
-                    Name = channelName,
-                };
+                IRCChannel? joinedChannel = this.channels.FirstOrDefault(c => c.Name == channelName);
+                
+                if(joinedChannel == null) {
+                    joinedChannel = new(this) {
+                        Name = channelName,
+                    };
+
+                    this.channels.Add(joinedChannel);
+                    this.ChannelAdded?.Invoke(this, joinedChannel);
+                }
 
                 joinedChannel.Users.Add(joinedUser);
-
-                this.channels.Add(joinedChannel);
-                this.ChannelAdded?.Invoke(this, joinedChannel);
-
+                
                 Console.WriteLine($"{joinedUser} joined {joinedChannel}");
                 break;
             }
