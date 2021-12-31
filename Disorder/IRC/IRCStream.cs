@@ -21,15 +21,17 @@ public class IRCStream {
 
         byte lastByte = 0x00;
         while(this.stream.DataAvailable) { // While data is available, read
-            int thisByte = this.stream.ReadByte();
-            if(thisByte == -1) throw new ArgumentNullException();
+            int readByte = this.stream.ReadByte();
+            if(readByte == -1) throw new ArgumentNullException();
 
-            if(lastByte == '\r' && (byte)thisByte == '\n') {
-                buffer.Add((byte)thisByte);
+            byte actualByte = (byte)readByte; 
+
+            if(lastByte == '\r' && actualByte == '\n') {
+                buffer.Add(actualByte);
                 break;
             }
 
-            buffer.Add(lastByte = (byte)thisByte);
+            buffer.Add(lastByte = actualByte);
         }
 
         return Encoding.UTF8.GetString(buffer.ToArray()).TrimEnd();
