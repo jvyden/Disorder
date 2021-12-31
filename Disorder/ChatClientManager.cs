@@ -6,6 +6,9 @@ public static class ChatClientManager {
     private static readonly ConcurrentQueue<IChatClient> chatClientQueue = new();
 
     public static void Initialize(List<IChatClient> chatClients) {
+        AppDomain.CurrentDomain.ProcessExit += onExit;
+        AppDomain.CurrentDomain.UnhandledException += onExit;
+        
         foreach(IChatClient chatClient in chatClients) {
             chatClientQueue.Enqueue(chatClient);
             foreach(IGuild guild in chatClient.Guilds)
@@ -21,6 +24,11 @@ public static class ChatClientManager {
             Task.Factory.StartNew(async () => {
                 while(true) await processQueue();
             });
+    }
+
+    private static void onExit(object? sender, EventArgs e) {
+        Console.WriteLine("Exiting safely...");
+        Settings.Instance.Save();
     }
 
     private static async Task processQueue() {

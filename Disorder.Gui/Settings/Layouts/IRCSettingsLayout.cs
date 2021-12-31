@@ -8,5 +8,6 @@ public class IRCSettingsLayout : SettingsLayout {
 
     private void ipChanged(object? _, string text) {
         Console.WriteLine("text changed to " + text);
+        Settings.Instance.IrcServerUrl = text;
     }
 }

@@ -40,25 +40,29 @@ public class Settings {
             File.WriteAllText(ConfigFile, configFile);
         }
         else {
-            string configFile = JsonSerializer.Serialize
-            (
-                new Settings(),
-                typeof(Settings),
-                new JsonSerializerOptions {
-                    WriteIndented = true,
-                }
-            );
-
-            File.WriteAllText(ConfigFile, configFile);
-
+            Instance = new Settings();
+            Instance.Save();
+            
             Console.WriteLine
             (
                 "The configuration file was not found. " +
                 "A blank configuration file has been created at " +
                 ConfigFile + "."
             );
-            Instance = new Settings();
         }
+    }
+
+    public void Save() {
+        string configFile = JsonSerializer.Serialize
+        (
+            this,
+            typeof(Settings),
+            new JsonSerializerOptions {
+                WriteIndented = true,
+            }
+        );
+
+        File.WriteAllText(ConfigFile, configFile);
     }
 
     public string IrcServerUrl { get; set; } = "localhost";
