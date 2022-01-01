@@ -1,8 +1,8 @@
-namespace Disorder.Discord; 
+namespace Disorder.Discord;
 
 public class DiscordMessage : IMessage {
     public global::Discord.DiscordMessage Message;
-    
+
     public DiscordMessage(global::Discord.DiscordMessage message, DiscordUser author) {
         this.Message = message;
         this.Author = author;

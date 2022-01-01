@@ -1,24 +1,24 @@
 using Kettu;
 
-namespace Disorder.IRC; 
+namespace Disorder.IRC;
 
 public class LoggerLevelIRCInfo : LoggerLevel {
-	private LoggerLevelIRCInfo() {}
-	
-	public override string      Name => "IRCInfo";
-	public static   LoggerLevel Instance = new LoggerLevelIRCInfo();
-} 
+    public static LoggerLevel Instance = new LoggerLevelIRCInfo();
+    private LoggerLevelIRCInfo() {}
+
+    public override string Name => "IRCInfo";
+}
 
 public class LoggerLevelIRCError : LoggerLevel {
-	private LoggerLevelIRCError() {}
-	
-	public override string      Name => "IRCError";
-	public static   LoggerLevel Instance = new LoggerLevelIRCError();
-} 
+    public static LoggerLevel Instance = new LoggerLevelIRCError();
+    private LoggerLevelIRCError() {}
+
+    public override string Name => "IRCError";
+}
 
 public class LoggerLevelIRCWarning : LoggerLevel {
-	private LoggerLevelIRCWarning() {}
-	
-	public override string      Name => "IRCWarning";
-	public static   LoggerLevel Instance = new LoggerLevelIRCWarning();
-} 
+    public static LoggerLevel Instance = new LoggerLevelIRCWarning();
+    private LoggerLevelIRCWarning() {}
+
+    public override string Name => "IRCWarning";
+}

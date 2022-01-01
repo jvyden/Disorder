@@ -1,4 +1,3 @@
-using Disorder.Discord;
 using Disorder.Dummy;
 using Disorder.Gui.ListItems;
 using Disorder.IRC;
@@ -8,12 +7,10 @@ using Kettu;
 
 namespace Disorder.Gui.Forms;
 
-using Disorder;
-
 public class MainForm : Form {
 
     private readonly List<IChatClient> chatClients = new() {
-        new IRCChatClient(Settings.Instance.IrcServerUrl),
+        new IRCChatClient(Disorder.Settings.Instance.IrcServerUrl),
         // new DiscordChatClient(Settings.Instance.DiscordToken),
         new DummyChatClient(),
     };
@@ -23,18 +20,12 @@ public class MainForm : Form {
     public readonly ListBox TextList;
     public readonly ListBox UserList;
 
-    protected override void Dispose(bool disposing) {
-        Logger.StopLogging().Wait();
-        
-        base.Dispose(disposing);
-    }
-
     public MainForm() {
         Logger.AddLogger(new ConsoleLogger());
         Logger.StartLogging();
-        
+
         Logger.Log("Constructing main form", LoggerLevelGUIInfo.Instance);
-        
+
         this.Title = "Disorder";
         this.ClientSize = new Size(1280, 960);
 
@@ -45,16 +36,18 @@ public class MainForm : Form {
 
         this.Menu = new MenuBar {
             Items = {
-                new ButtonMenuItem { Text = "File", Items = {
-                    new Command((_, _) => new SettingsForm().Show()) {
-                        MenuText = "Settings",
-                        Shortcut = Application.Instance.CommonModifier | Keys.Comma,
+                new ButtonMenuItem {
+                    Text = "File", Items = {
+                        new Command((_, _) => new SettingsForm().Show()) {
+                            MenuText = "Settings",
+                            Shortcut = Application.Instance.CommonModifier | Keys.Comma,
+                        },
+                        new Command((_, _) => Application.Instance.Quit()) {
+                            MenuText = "Exit",
+                            Shortcut = Application.Instance.CommonModifier | Keys.Q,
+                        },
                     },
-                    new Command((_,_) => Application.Instance.Quit()) {
-                        MenuText = "Exit",
-                        Shortcut = Application.Instance.CommonModifier | Keys.Q,
-                    },
-                }},
+                },
                 new ButtonMenuItem { Text = "Help" },
             },
         };
@@ -80,14 +73,18 @@ public class MainForm : Form {
         this.Content = layout;
 
         ChatClientManager.Initialize(this.chatClients);
-        
-        foreach(IChatClient chatClient in this.chatClients) {
-            chatClient.GuildsUpdated += this.guildsUpdated;
-        }
+
+        foreach(IChatClient chatClient in this.chatClients) chatClient.GuildsUpdated += this.guildsUpdated;
 
         this.GuildList.SelectedValueChanged += this.channelChanged;
-        
+
         this.guildsUpdated(this, null);
+    }
+
+    protected override void Dispose(bool disposing) {
+        Logger.StopLogging().Wait();
+
+        base.Dispose(disposing);
     }
     private void channelChanged(object? sender, EventArgs e) {
         if(this.GuildList.SelectedValue is not ChannelListItem channelItem) {
@@ -105,7 +102,7 @@ public class MainForm : Form {
 
     private void guildsUpdated(object? sender, EventArgs e) {
         this.GuildList.Items.Clear();
-        
+
         foreach(IGuild guild in this.chatClients.SelectMany(chatClient => chatClient.Guilds)) {
             this.GuildList.Items.Add(new GuildListItem(guild));
             guild.ChannelAdded += this.channelAddedToGuild;
@@ -118,14 +115,13 @@ public class MainForm : Form {
 
     private void channelAddedToGuild(object? _, IChannel channel) {
         GuildListItem guildListItem = (GuildListItem)this.GuildList.Items.First(i => {
-            if(i is GuildListItem guildListItem) {
-                return guildListItem.Guild == channel.Guild;
-            }
+            if(i is GuildListItem guildListItem) return guildListItem.Guild == channel.Guild;
+
             return false;
         });
-        
+
         this.GuildList.Items.Insert(this.GuildList.Items.IndexOf(guildListItem) + 1, new ChannelListItem(channel));
-        
+
         channel.MessageSent += delegate(object? _, IMessage message) {
             if(this.GuildList.SelectedValue is not ChannelListItem channelItem) return;
 

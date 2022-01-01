@@ -5,15 +5,14 @@ using Kettu;
 
 namespace Disorder;
 
-
 public static class ChatClientManager {
     private static readonly ConcurrentQueue<IChatClient> chatClientQueue = new();
 
     public static void Initialize(List<IChatClient> chatClients) {
         AppDomain.CurrentDomain.ProcessExit += onExit;
         AppDomain.CurrentDomain.UnhandledException += onExit;
-        GLib.ExceptionManager.UnhandledException += onExit;
-        
+        ExceptionManager.UnhandledException += onExit;
+
         foreach(IChatClient chatClient in chatClients) {
             chatClientQueue.Enqueue(chatClient);
             foreach(IGuild guild in chatClient.Guilds)
@@ -43,7 +42,7 @@ public static class ChatClientManager {
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if(chatClientQueue.TryDequeue(out IChatClient? chatClient) && chatClient != null) // Process every guild in every chat client
             try {
-                foreach (IGuild guild in chatClient.Guilds) await guild.Process();
+                foreach(IGuild guild in chatClient.Guilds) await guild.Process();
             }
             catch(Exception ex) {
                 Logger.Log($"{ex.GetType()} occured during processing {chatClient.GetType()}!", LoggerLevelDisorderError.Instance);

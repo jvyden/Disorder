@@ -1,8 +1,7 @@
 using Disorder.Gui.Forms;
-using Eto.Forms;
 using Kettu;
 
-namespace Disorder.Gui.Settings.Layouts; 
+namespace Disorder.Gui.Settings.Layouts;
 
 public class GeneralSettingsLayout : SettingsLayout {
     public GeneralSettingsLayout() : base("General") {

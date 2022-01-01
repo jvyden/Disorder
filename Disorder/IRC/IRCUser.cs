@@ -30,15 +30,15 @@ public class IRCUser : IUser {
     protected bool Equals(IRCUser other) {
         return this.Hostname == other.Hostname && this.Username == other.Username && this.Nickname == other.Nickname;
     }
-    
+
     public override bool Equals(object? obj) {
         if(ReferenceEquals(null, obj)) return false;
         if(ReferenceEquals(this, obj)) return true;
         if(obj.GetType() != this.GetType()) return false;
 
-        return Equals((IRCUser)obj);
+        return this.Equals((IRCUser)obj);
     }
-    
+
     public override int GetHashCode() {
         return HashCode.Combine(this.Hostname, this.Username, this.Nickname);
     }

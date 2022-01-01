@@ -1,11 +1,11 @@
 using Discord;
 using Kettu;
 
-namespace Disorder.Discord; 
+namespace Disorder.Discord;
 
 public class DiscordChannel : IChannel {
     public TextChannel Channel;
-    
+
     public DiscordChannel(TextChannel channel, DiscordGuild guild) {
         this.Channel = channel;
         this.Guild = guild;
@@ -18,7 +18,7 @@ public class DiscordChannel : IChannel {
         await this.Channel.SendMessageAsync(message);
         return null;
     }
-    
+
     public event EventHandler<IMessage>? MessageSent;
     public async Task<IEnumerable<IMessage>> FetchMessages(int limit = 50) {
         Logger.Log("Fetching messages", LoggerLevelDiscordInfo.Instance);
@@ -39,7 +39,7 @@ public class DiscordChannel : IChannel {
                     Id = (long)discordMessage.Id,
                     Content = discordMessage.Content,
                 };
-                
+
                 outMessages.Add(message);
             }
         }

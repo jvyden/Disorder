@@ -1,24 +1,24 @@
 using Kettu;
 
-namespace Disorder.Dummy; 
+namespace Disorder.Dummy;
 
 public class LoggerLevelDummyInfo : LoggerLevel {
-	private LoggerLevelDummyInfo() {}
-	
-	public override string      Name => "DummyInfo";
-	public static   LoggerLevel Instance = new LoggerLevelDummyInfo();
-} 
+    public static LoggerLevel Instance = new LoggerLevelDummyInfo();
+    private LoggerLevelDummyInfo() {}
+
+    public override string Name => "DummyInfo";
+}
 
 public class LoggerLevelDummyError : LoggerLevel {
-	private LoggerLevelDummyError() {}
-	
-	public override string      Name => "DummyError";
-	public static   LoggerLevel Instance = new LoggerLevelDummyError();
-} 
+    public static LoggerLevel Instance = new LoggerLevelDummyError();
+    private LoggerLevelDummyError() {}
+
+    public override string Name => "DummyError";
+}
 
 public class LoggerLevelDummyWarning : LoggerLevel {
-	private LoggerLevelDummyWarning() {}
-	
-	public override string      Name => "DummyWarning";
-	public static   LoggerLevel Instance = new LoggerLevelDummyWarning();
-} 
+    public static LoggerLevel Instance = new LoggerLevelDummyWarning();
+    private LoggerLevelDummyWarning() {}
+
+    public override string Name => "DummyWarning";
+}

@@ -13,6 +13,8 @@ public class IRCGuild : IGuild {
 
     private IRCStream? stream;
 
+    public List<IRCUser> Users = new();
+
     public IRCGuild(string uri, IRCChatClient chatClient, bool ssl = false, string? name = null) {
         this.Uri = uri;
         this.ChatClient = chatClient;
@@ -44,8 +46,6 @@ public class IRCGuild : IGuild {
 
     public IEnumerable<IChannel> Channels => this.channels;
 
-    public List<IRCUser> Users = new();
-
     public async Task Process() {
         List<string> lines = new();
 
@@ -58,9 +58,7 @@ public class IRCGuild : IGuild {
     private void autoJoin() {
         string[] autoJoinChannels = Settings.Instance.IrcAutoJoinList.Split(',');
 
-        foreach(string channel in autoJoinChannels) {
-            this.Stream.RunIRCCommand("JOIN " + channel.Trim());
-        }
+        foreach(string channel in autoJoinChannels) this.Stream.RunIRCCommand("JOIN " + channel.Trim());
     }
 
     public void HandleLine(string line) {
@@ -111,7 +109,7 @@ public class IRCGuild : IGuild {
             }
             case "001": { // Registered
                 this.OnLoggedIn?.Invoke(this, null);
-                
+
                 this.ChatClient.User = IRCUser.FromCloak(trail.Replace("Welcome to the Internet Relay Network ", ""));
                 this.Users.Add((IRCUser)this.ChatClient.User);
                 this.autoJoin();
@@ -132,9 +130,9 @@ public class IRCGuild : IGuild {
 
                 IRCUser joinedUser = IRCUser.FromCloak(origin);
                 IRCChannel? joinedChannel = this.channels.FirstOrDefault(c => c.Name == channelName);
-                
+
                 if(joinedChannel == null) {
-                    joinedChannel = new(this) {
+                    joinedChannel = new IRCChannel(this) {
                         Name = channelName,
                     };
 
@@ -143,7 +141,7 @@ public class IRCGuild : IGuild {
                 }
 
                 joinedChannel.Users.Add(joinedUser);
-                
+
                 if(this.Users.FirstOrDefault(u => Equals(u, joinedUser)) == null) this.Users.Add(joinedUser);
 
                 Logger.Log($"{joinedUser} joined {joinedChannel}", LoggerLevelIRCInfo.Instance);
