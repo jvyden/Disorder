@@ -1,3 +1,4 @@
+using Disorder.Discord;
 using Disorder.Dummy;
 using Disorder.Gui.ListItems;
 using Disorder.IRC;
@@ -7,11 +8,13 @@ using Kettu;
 
 namespace Disorder.Gui.Forms;
 
+using Disorder;
+
 public class MainForm : Form {
 
     private readonly List<IChatClient> chatClients = new() {
-        new IRCChatClient(Disorder.Settings.Instance.IrcServerUrl),
-        // new DiscordChatClient(Settings.Instance.DiscordToken),
+        new IRCChatClient(Settings.Instance.IrcServerUrl),
+        new DiscordChatClient(Settings.Instance.DiscordToken),
         new DummyChatClient(),
     };
 
