@@ -24,7 +24,7 @@ public class IRCStream {
             int readByte = this.stream.ReadByte();
             if(readByte == -1) throw new ArgumentNullException();
 
-            byte actualByte = (byte)readByte; 
+            byte actualByte = (byte)readByte;
 
             if(lastByte == '\r' && actualByte == '\n') {
                 buffer.Add(actualByte);

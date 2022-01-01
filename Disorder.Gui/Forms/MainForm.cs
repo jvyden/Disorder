@@ -4,6 +4,7 @@ using Disorder.Gui.ListItems;
 using Disorder.IRC;
 using Eto.Drawing;
 using Eto.Forms;
+using Kettu;
 
 namespace Disorder.Gui.Forms;
 
@@ -23,8 +24,11 @@ public class MainForm : Form {
     public readonly ListBox UserList;
 
     public MainForm() {
-        Console.WriteLine("Constructing main form");
-        
+        Logger.AddLogger(new ConsoleLogger());
+        Logger.StartLogging();
+
+        Logger.Log("Constructing main form", LoggerLevelGUIInfo.Instance);
+
         this.Title = "Disorder";
         this.ClientSize = new Size(1280, 960);
 
@@ -35,16 +39,18 @@ public class MainForm : Form {
 
         this.Menu = new MenuBar {
             Items = {
-                new ButtonMenuItem { Text = "File", Items = {
-                    new Command((_, _) => new SettingsForm().Show()) {
-                        MenuText = "Settings",
-                        Shortcut = Application.Instance.CommonModifier | Keys.Comma,
+                new ButtonMenuItem {
+                    Text = "File", Items = {
+                        new Command((_, _) => new SettingsForm().Show()) {
+                            MenuText = "Settings",
+                            Shortcut = Application.Instance.CommonModifier | Keys.Comma,
+                        },
+                        new Command((_, _) => Application.Instance.Quit()) {
+                            MenuText = "Exit",
+                            Shortcut = Application.Instance.CommonModifier | Keys.Q,
+                        },
                     },
-                    new Command((_,_) => Application.Instance.Quit()) {
-                        MenuText = "Exit",
-                        Shortcut = Application.Instance.CommonModifier | Keys.Q,
-                    },
-                }},
+                },
                 new ButtonMenuItem { Text = "Help" },
             },
         };
@@ -70,14 +76,18 @@ public class MainForm : Form {
         this.Content = layout;
 
         ChatClientManager.Initialize(this.chatClients);
-        
-        foreach(IChatClient chatClient in this.chatClients) {
-            chatClient.GuildsUpdated += this.guildsUpdated;
-        }
+
+        foreach(IChatClient chatClient in this.chatClients) chatClient.GuildsUpdated += this.guildsUpdated;
 
         this.GuildList.SelectedValueChanged += this.channelChanged;
-        
+
         this.guildsUpdated(this, null);
+    }
+
+    protected override void Dispose(bool disposing) {
+        Logger.StopLogging().Wait();
+
+        base.Dispose(disposing);
     }
     private void channelChanged(object? sender, EventArgs e) {
         if(this.GuildList.SelectedValue is not ChannelListItem channelItem) {
@@ -90,12 +100,12 @@ public class MainForm : Form {
             await this.RefreshMessages(channelItem.Channel);
         });
 
-        Console.WriteLine("channel item changed to " + channelItem.Channel.Name);
+        Logger.Log("channel item changed to " + channelItem.Channel.Name, LoggerLevelGUIInfo.Instance);
     }
 
     private void guildsUpdated(object? sender, EventArgs e) {
         this.GuildList.Items.Clear();
-        
+
         foreach(IGuild guild in this.chatClients.SelectMany(chatClient => chatClient.Guilds)) {
             this.GuildList.Items.Add(new GuildListItem(guild));
             guild.ChannelAdded += this.channelAddedToGuild;
@@ -108,14 +118,13 @@ public class MainForm : Form {
 
     private void channelAddedToGuild(object? _, IChannel channel) {
         GuildListItem guildListItem = (GuildListItem)this.GuildList.Items.First(i => {
-            if(i is GuildListItem guildListItem) {
-                return guildListItem.Guild == channel.Guild;
-            }
+            if(i is GuildListItem guildListItem) return guildListItem.Guild == channel.Guild;
+
             return false;
         });
-        
+
         this.GuildList.Items.Insert(this.GuildList.Items.IndexOf(guildListItem) + 1, new ChannelListItem(channel));
-        
+
         channel.MessageSent += delegate(object? _, IMessage message) {
             if(this.GuildList.SelectedValue is not ChannelListItem channelItem) return;
 
