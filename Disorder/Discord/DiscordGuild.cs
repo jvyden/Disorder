@@ -32,4 +32,8 @@ public class DiscordGuild : IGuild {
         }
     }
     public event EventHandler<IChannel>? ChannelAdded;
+
+    public override string ToString() {
+        return $"{nameof(this.Name)}: {this.Name}, {nameof(this.Id)}: {this.Id}";
+    }
 }

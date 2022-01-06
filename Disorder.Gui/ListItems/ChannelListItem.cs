@@ -7,6 +7,6 @@ public class ChannelListItem : ListItem {
 
     public ChannelListItem(IChannel channel) {
         this.Channel = channel;
-        this.Text = " -> " + channel.Name;
+        this.Text = "  " + channel.Name;
     }
 }

@@ -2,7 +2,7 @@ using Eto.Forms;
 
 namespace Disorder.Gui.ListItems;
 
-public class GuildListItem : ListItem {
+public class GuildListItem : ImageListItem {
     public IGuild Guild;
 
     public GuildListItem(IGuild guild) {

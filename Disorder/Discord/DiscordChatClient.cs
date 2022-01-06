@@ -6,16 +6,13 @@ public class DiscordChatClient : IChatClient {
     public DiscordClient Client;
 
     private readonly List<DiscordGuild> guilds = new();
-    private string token;
 
     public DiscordChatClient(string token) {
-        this.token = token;
-
         // Dirty hack to fix gui
         // TODO: find the actual problem
         Task.Factory.StartNew(() => {
             this.Client = new DiscordClient(token, new DiscordConfig {
-                RetryOnRateLimit = false,
+                RetryOnRateLimit = true,
             });
 
             foreach(PartialGuild discordGuild in this.Client.GetGuilds()) {

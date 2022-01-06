@@ -56,7 +56,7 @@ public class MainForm : Form {
         };
 
         layout.BeginHorizontal();
-        layout.Add(this.GuildList = new ListBox { Size = new Size(250, -1) });
+        layout.Add(this.GuildList = new ListBox { Size = new Size(300, -1) });
         layout.BeginVertical();
         layout.BeginHorizontal();
         layout.Add(this.MessageList = new ListBox(), true, true);
@@ -89,6 +89,7 @@ public class MainForm : Form {
 
         base.Dispose(disposing);
     }
+    
     private void channelChanged(object? sender, EventArgs e) {
         if(this.GuildList.SelectedValue is not ChannelListItem channelItem) {
             this.UserList.Items.Clear();
@@ -106,8 +107,48 @@ public class MainForm : Form {
     private void guildsUpdated(object? sender, EventArgs e) {
         this.GuildList.Items.Clear();
 
+        using HttpClient client = new();
+
         foreach(IGuild guild in this.chatClients.SelectMany(chatClient => chatClient.Guilds)) {
-            this.GuildList.Items.Add(new GuildListItem(guild));
+            GuildListItem guildListItem = new(guild);
+            
+            if(guild is DiscordGuild discordGuild && discordGuild.Guild.Icon != null) {
+                Directory.CreateDirectory(Path.Combine(Settings.ConfigPath, "ServerIconCache"));
+                
+                string avatarUrl = discordGuild.Guild.Icon.Url;
+                string avatarPath = Path.Combine(Settings.ConfigPath, "ServerIconCache", avatarUrl.Substring(avatarUrl.LastIndexOf('/') + 1));
+
+                Stream? stream = null;
+                
+                if(File.Exists(avatarPath)) {
+                    stream = File.Open(avatarPath, FileMode.Open);
+                }
+                else {
+                    // TODO: make async
+                    Logger.Log($"Fetching image for {discordGuild} from {avatarUrl}", LoggerLevelDiscordInfo.Instance);
+                    HttpResponseMessage response = client.GetAsync(avatarUrl).Result;
+                    Logger.Log($"Successfully fetched image for {discordGuild}", LoggerLevelDiscordInfo.Instance);
+
+                    if(response.IsSuccessStatusCode) {
+                        stream = response.Content.ReadAsStream();
+
+                        using MemoryStream ms = new();
+                        stream.CopyTo(ms);
+                        
+                        File.WriteAllBytes(avatarPath, ms.ToArray());
+                    }
+                }
+
+                if(stream != null) {
+                    Bitmap bitmap = new(stream);
+                    guildListItem.Image = bitmap.WithSize(32, 32);
+                }
+                else {
+                    Logger.Log($"Failed to get image for {discordGuild}", LoggerLevelDiscordError.Instance);
+                }
+            }
+            
+            this.GuildList.Items.Add(guildListItem);
             guild.ChannelAdded += this.channelAddedToGuild;
         }
     }
