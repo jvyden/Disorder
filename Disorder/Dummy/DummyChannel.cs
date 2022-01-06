@@ -1,3 +1,5 @@
+using Kettu;
+
 namespace Disorder.Dummy;
 
 public class DummyChannel : IChannel {
@@ -9,7 +11,7 @@ public class DummyChannel : IChannel {
     public IGuild Guild { get; set; }
     public async Task<IMessage> SendMessage(string content) {
         DummyMessage message = new(new DummyUser(), content);
-        Console.WriteLine($"Sending dummy message '{message}' to {this}");
+        Logger.Log($"Sending dummy message '{message}' to {this}", LoggerLevelDummyInfo.Instance);
 
         this.MessageSent?.Invoke(this, message);
 

@@ -1,6 +1,7 @@
-using Eto.Forms;
+using Disorder.Gui.Forms;
+using Kettu;
 
-namespace Disorder.Gui.Settings.Layouts; 
+namespace Disorder.Gui.Settings.Layouts;
 
 public class GeneralSettingsLayout : SettingsLayout {
     public GeneralSettingsLayout() : base("General") {
@@ -8,6 +9,6 @@ public class GeneralSettingsLayout : SettingsLayout {
     }
 
     private void doThingsChecked(object? sender, bool isChecked) {
-        Console.WriteLine("Do things: " + isChecked);
+        Logger.Log("Do things: " + isChecked, LoggerLevelGUIInfo.Instance);
     }
 }

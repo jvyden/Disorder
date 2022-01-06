@@ -1,11 +1,13 @@
 using Discord;
 
-namespace Disorder.Discord; 
+namespace Disorder.Discord;
 
 public class DiscordChatClient : IChatClient {
-    private string token;
 
     public DiscordClient Client;
+
+    private readonly List<DiscordGuild> guilds = new();
+    private string token;
 
     public DiscordChatClient(string token) {
         this.token = token;
@@ -26,13 +28,11 @@ public class DiscordChatClient : IChatClient {
                 this.guilds.Add(guild);
             }
         }).Wait();
-        
-        GuildsUpdated?.Invoke(this, null);
-    }
-    
-    private List<DiscordGuild> guilds = new();
 
-    public IEnumerable<IGuild> Guilds => guilds;
+        this.GuildsUpdated?.Invoke(this, null);
+    }
+
+    public IEnumerable<IGuild> Guilds => this.guilds;
     public IUser User { get; }
     public event EventHandler? GuildsUpdated;
 }

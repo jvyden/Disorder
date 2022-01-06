@@ -1,6 +1,6 @@
 using Eto.Forms;
 
-namespace Disorder.Gui.Settings; 
+namespace Disorder.Gui.Settings;
 
 public class FiringCheckBox : CheckBox {
     public FiringCheckBox(EventHandler<bool> eventHandler) {

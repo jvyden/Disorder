@@ -7,7 +7,7 @@ public class IRCChatClient : IChatClient {
         this.guilds = new List<IRCGuild>(1) {
             new(uri, this),
         };
-        
+
         this.GuildsUpdated?.Invoke(this, null);
     }
 

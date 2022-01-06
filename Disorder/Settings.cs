@@ -1,24 +1,21 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Kettu;
 
-namespace Disorder; 
+namespace Disorder;
 
 public class Settings {
-    public static Settings Instance { get; private set; }
     private const string configFileName = "disorder.config.json";
+
+    public const int CurrentConfigVersion = 2; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
 
     public static readonly string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Disorder");
 
     public static readonly string ConfigFile = Path.Combine(ConfigPath, configFileName);
 
-    public const int CurrentConfigVersion = 2; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
-
-    [JsonPropertyName("ConfigVersionDoNotModifyOrYouWillBeSlapped")]
-    public int ConfigVersion { get; set; } = CurrentConfigVersion;
-
     static Settings() {
         Directory.CreateDirectory(ConfigPath);
-        
+
         if(File.Exists(ConfigFile)) {
             string configFile = File.ReadAllText(ConfigFile);
 
@@ -26,7 +23,7 @@ public class Settings {
 
             if(Instance.ConfigVersion >= CurrentConfigVersion) return;
 
-            Console.WriteLine($"Upgrading config file from version {Instance.ConfigVersion} to version {CurrentConfigVersion}");
+            Logger.Log($"Upgrading config file from version {Instance.ConfigVersion} to version {CurrentConfigVersion}", LoggerLevelDisorderInfo.Instance);
             Instance.ConfigVersion = CurrentConfigVersion;
             configFile = JsonSerializer.Serialize
             (
@@ -42,15 +39,26 @@ public class Settings {
         else {
             Instance = new Settings();
             Instance.Save();
-            
-            Console.WriteLine
+
+            Logger.Log
             (
                 "The configuration file was not found. " +
                 "A blank configuration file has been created at " +
-                ConfigFile + "."
+                ConfigFile + ".",
+                LoggerLevelDisorderInfo.Instance
             );
         }
     }
+    public static Settings Instance { get; private set; }
+
+    [JsonPropertyName("ConfigVersionDoNotModifyOrYouWillBeSlapped")]
+    public int ConfigVersion { get; set; } = CurrentConfigVersion;
+
+    public string IrcServerUrl { get; set; } = "localhost";
+    public string IrcUsername { get; set; } = Environment.UserName;
+    public string IrcAutoJoinList { get; set; } = "#general";
+
+    public string DiscordToken { get; set; }
 
     public void Save() {
         string configFile = JsonSerializer.Serialize
@@ -64,10 +72,4 @@ public class Settings {
 
         File.WriteAllText(ConfigFile, configFile);
     }
-
-    public string IrcServerUrl { get; set; } = "localhost";
-    public string IrcUsername { get; set; } = Environment.UserName;
-    public string IrcAutoJoinList { get; set; } = "#general";
-    
-    public string DiscordToken { get; set; }
 }
