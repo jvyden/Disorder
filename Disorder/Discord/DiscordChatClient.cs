@@ -3,7 +3,6 @@ using Discord;
 namespace Disorder.Discord;
 
 public class DiscordChatClient : IChatClient {
-
     public DiscordClient Client;
 
     private readonly List<DiscordGuild> guilds = new();
@@ -27,6 +26,7 @@ public class DiscordChatClient : IChatClient {
 
                 this.guilds.Add(guild);
             }
+            this.OnLoggedIn?.Invoke(this, null);
         }).Wait();
 
         this.GuildsUpdated?.Invoke(this, null);
@@ -34,5 +34,7 @@ public class DiscordChatClient : IChatClient {
 
     public IEnumerable<IGuild> Guilds => this.guilds;
     public IUser User { get; }
+
     public event EventHandler? GuildsUpdated;
+    public event EventHandler? OnLoggedIn;
 }

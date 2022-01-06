@@ -15,10 +15,9 @@ public static class ChatClientManager {
 
         foreach(IChatClient chatClient in chatClients) {
             chatClientQueue.Enqueue(chatClient);
-            foreach(IGuild guild in chatClient.Guilds)
-                guild.OnLoggedIn += delegate {
-                    Logger.Log($"{guild} logged in as {chatClient.User}", LoggerLevelDummyInfo.Instance);
-                };
+            chatClient.OnLoggedIn += delegate {
+                Logger.Log($"{chatClient} logged in as {chatClient.User}", LoggerLevelDisorderInfo.Instance);
+            };
         }
 
         int threads = Math.Min(Environment.ProcessorCount, chatClients.Count);

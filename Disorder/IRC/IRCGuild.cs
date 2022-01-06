@@ -41,7 +41,6 @@ public class IRCGuild : IGuild {
 
     public string Name { get; set; }
     public long Id { get; set; }
-    public event EventHandler? OnLoggedIn;
     public event EventHandler<IChannel>? ChannelAdded;
 
     public IEnumerable<IChannel> Channels => this.channels;
@@ -108,7 +107,7 @@ public class IRCGuild : IGuild {
                 break;
             }
             case "001": { // Registered
-                this.OnLoggedIn?.Invoke(this, null);
+                this.ChatClient.InvokeLoggedIn();
 
                 this.ChatClient.User = IRCUser.FromCloak(trail.Replace("Welcome to the Internet Relay Network ", ""));
                 this.Users.Add((IRCUser)this.ChatClient.User);

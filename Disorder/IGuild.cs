@@ -8,7 +8,5 @@ public interface IGuild {
 
     public Task Process();
 
-    public event EventHandler? OnLoggedIn;
-
     public event EventHandler<IChannel>? ChannelAdded;
 }

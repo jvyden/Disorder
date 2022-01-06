@@ -16,7 +16,7 @@ public class DiscordGuild : IGuild {
     public long Id { get; set; }
     public IEnumerable<IChannel> Channels { get; }
     public async Task Process() {
-        if(!this.loggedIn && this.OnLoggedIn?.GetInvocationList().Length != 0) {
+        if(!this.loggedIn) {
             IReadOnlyList<GuildChannel>? channels = await this.Guild.GetChannelsAsync();
             if(channels != null)
                 foreach(GuildChannel guildChannel in channels)
@@ -25,14 +25,11 @@ public class DiscordGuild : IGuild {
                             Id = (long)textChannel.Id,
                             Name = "#" + textChannel.Name,
                         };
-                        Logger.Log("Constructed channel " + channel.Name + channel.Id, LoggerLevelDiscordInfo.Instance);
+                        Logger.Log($"Constructed channel {channel.Name} (id: {channel.Id})", LoggerLevelDiscordInfo.Instance);
                         this.ChannelAdded?.Invoke(null, channel);
                     }
-
-            this.OnLoggedIn?.Invoke(this, null);
             this.loggedIn = true;
         }
     }
-    public event EventHandler? OnLoggedIn;
     public event EventHandler<IChannel>? ChannelAdded;
 }

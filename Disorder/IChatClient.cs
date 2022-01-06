@@ -6,4 +6,5 @@ public interface IChatClient {
     public IUser User { get; }
 
     public event EventHandler GuildsUpdated;
+    public event EventHandler? OnLoggedIn;
 }

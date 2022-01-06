@@ -1,4 +1,5 @@
 ﻿using Disorder.Discord;
+using Disorder.IRC;
 using Kettu;
 
 namespace Disorder;
@@ -9,7 +10,7 @@ public static class Program {
         Logger.StartLogging();
 
         List<IChatClient> chatClients = new() {
-//            new IRCChatClient(args[0]),
+            new IRCChatClient(args[0]),
             new DiscordChatClient(Settings.Instance.DiscordToken),
         };
 
