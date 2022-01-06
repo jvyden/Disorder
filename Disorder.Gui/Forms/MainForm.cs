@@ -19,7 +19,7 @@ public class MainForm : Form {
 
     public readonly ListBox GuildList;
     public readonly TextBox MessageField;
-    public readonly ListBox TextList;
+    public readonly ListBox MessageList;
     public readonly ListBox UserList;
 
     public MainForm() {
@@ -53,7 +53,7 @@ public class MainForm : Form {
         layout.Add(this.GuildList = new ListBox { Size = new Size(250, -1) });
         layout.BeginVertical();
         layout.BeginHorizontal();
-        layout.Add(this.TextList = new ListBox(), true, true);
+        layout.Add(this.MessageList = new ListBox(), true, true);
         layout.Add(this.UserList = new ListBox());
         layout.EndHorizontal();
         layout.BeginHorizontal();
@@ -82,7 +82,7 @@ public class MainForm : Form {
     private void channelChanged(object? sender, EventArgs e) {
         if(this.GuildList.SelectedValue is not ChannelListItem channelItem) {
             this.UserList.Items.Clear();
-            this.TextList.Items.Clear();
+            this.MessageList.Items.Clear();
             return;
         }
 
@@ -103,7 +103,7 @@ public class MainForm : Form {
     }
 
     private void messageSentToCurrentChannel(IMessage message) {
-        this.TextList.Items.Add(new MessageListItem(message));
+        this.MessageList.Items.Add(new MessageListItem(message));
     }
 
     private void channelAddedToGuild(object? _, IChannel channel) {
@@ -131,10 +131,10 @@ public class MainForm : Form {
     }
 
     public async Task RefreshMessages(IChannel channel) {
-        this.TextList.Items.Clear();
+        this.MessageList.Items.Clear();
         IEnumerable<IMessage> messages = await channel.FetchMessages();
 
-        foreach(IMessage message in messages) this.TextList.Items.Add(new MessageListItem(message));
+        foreach(IMessage message in messages) this.MessageList.Items.Add(new MessageListItem(message));
 
     }
 }
