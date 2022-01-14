@@ -8,12 +8,20 @@ public class DiscordChatClient : IChatClient {
     private readonly List<DiscordGuild> guilds = new();
 
     public DiscordChatClient(string token) {
+        Exception? exceptionIfFail = null;
+        
         // Dirty hack to fix gui
         // TODO: find the actual problem
         Task.Factory.StartNew(() => {
-            this.Client = new DiscordClient(token, new DiscordConfig {
-                RetryOnRateLimit = true,
-            });
+            try {
+                this.Client = new DiscordClient(token, new DiscordConfig {
+                    RetryOnRateLimit = true,
+                });
+            }
+            catch(Exception ex) {
+                exceptionIfFail = ex;
+                return;
+            }
 
             foreach(PartialGuild discordGuild in this.Client.GetGuilds()) {
                 DiscordGuild guild = new(discordGuild) {
@@ -25,6 +33,9 @@ public class DiscordChatClient : IChatClient {
             }
             this.OnLoggedIn?.Invoke(this, null);
         }).Wait();
+
+        if (exceptionIfFail != null)
+            throw exceptionIfFail;
 
         this.GuildsUpdated?.Invoke(this, null);
     }

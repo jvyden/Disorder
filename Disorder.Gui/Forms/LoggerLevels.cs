@@ -22,3 +22,10 @@ public class LoggerLevelGUIWarning : LoggerLevel {
 
     public override string Name => "GUIWarning";
 }
+
+public class LoggerLevelClientCreationError : LoggerLevel {
+    public static LoggerLevel Instance = new LoggerLevelClientCreationError();
+    private LoggerLevelClientCreationError() {}
+
+    public override string Name => "ClientCreationError";
+}

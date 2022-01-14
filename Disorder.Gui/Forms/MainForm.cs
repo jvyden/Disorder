@@ -12,20 +12,57 @@ using Disorder;
 
 public class MainForm : Form {
 
-    private readonly List<IChatClient> chatClients = new() {
-        new IRCChatClient(Settings.Instance.IrcServerUrl),
-        new DiscordChatClient(Settings.Instance.DiscordToken),
-        new DummyChatClient(),
-    };
+    private readonly List<IChatClient> chatClients = new();
 
     public readonly ListBox GuildList;
     public readonly TextBox MessageField;
     public readonly ListBox MessageList;
     public readonly ListBox UserList;
 
+    private void CreateChatClients() {
+        #region IRC
+        try {
+            IRCChatClient irc = new(Settings.Instance.IrcServerUrl);
+            this.chatClients.Add(irc);
+        }
+        catch (Exception ex){
+            LogFailedChatClient(typeof(IRCChatClient), ex);
+        }
+        #endregion
+        
+        #region Discord
+        try {
+            DiscordChatClient discord = new(Settings.Instance.DiscordToken);
+            this.chatClients.Add(discord);
+        }
+        catch (Exception ex){
+            LogFailedChatClient(typeof(DiscordChatClient), ex);
+        }
+        #endregion
+        
+        #region Dummy
+        try {
+            DummyChatClient dummy = new();
+            this.chatClients.Add(dummy);
+        }
+        catch (Exception ex){
+            LogFailedChatClient(typeof(DummyChatClient), ex);
+        }
+        #endregion
+    }
+
+    private static void LogFailedChatClient(Type chatClientType, Exception ex) {
+        Logger.Log(
+            $"{ex.GetType()} creating {chatClientType.Name}! Details: {ex.Message}", 
+            LoggerLevelClientCreationError.Instance
+        );
+    }
+    
     public MainForm() {
         Logger.AddLogger(new ConsoleLogger());
         Logger.StartLogging();
+        
+        this.CreateChatClients();
 
         Logger.Log("Constructing main form", LoggerLevelGUIInfo.Instance);
 
@@ -140,8 +177,13 @@ public class MainForm : Form {
                 }
 
                 if(stream != null) {
-                    Bitmap bitmap = new(stream);
-                    guildListItem.Image = bitmap.WithSize(32, 32);
+                    try {
+                        Bitmap bitmap = new(stream);
+                        guildListItem.Image = bitmap.WithSize(32, 32);
+                    }
+                    catch (Exception ex){
+                        Logger.Log($"Failed to get image for {discordGuild}: {ex.Message}", LoggerLevelDiscordError.Instance);
+                    }
                 }
                 else {
                     Logger.Log($"Failed to get image for {discordGuild}", LoggerLevelDiscordError.Instance);
