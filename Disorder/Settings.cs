@@ -7,7 +7,7 @@ namespace Disorder;
 public class Settings {
     private const string configFileName = "disorder.config.json";
 
-    public const int CurrentConfigVersion = 2; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
+    public const int CurrentConfigVersion = 3; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
 
     public static readonly string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Disorder");
 
