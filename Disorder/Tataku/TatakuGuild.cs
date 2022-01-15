@@ -52,6 +52,8 @@ public class TatakuGuild : IGuild {
 
     public readonly ConcurrentQueue<TatakuPacket?> PacketQueue = new();
 
+    private long lastPing = 0;
+
     public async Task Process() {
         // Run through everything currently in the packet queue
         while(this.PacketQueue.TryDequeue(out TatakuPacket? packet) && this.client.IsAlive && packet != null) {
@@ -60,6 +62,11 @@ public class TatakuGuild : IGuild {
 
             packet.WriteDataToStream(writer);
             this.client.Send(ms.ToArray());
+        }
+
+        if(TimestampHelper.Timestamp - 5 > this.lastPing) {
+            this.client.Ping();
+            this.lastPing = TimestampHelper.Timestamp;
         }
     }
 

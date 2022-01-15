@@ -11,7 +11,7 @@ public static class Program {
 
         List<IChatClient> chatClients = new() {
             new IRCChatClient(args[0]),
-            new DiscordChatClient(Settings.Instance.DiscordToken),
+//            new DiscordChatClient(Settings.Instance.DiscordToken),
         };
 
         ChatClientManager.Initialize(chatClients);

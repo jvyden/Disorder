@@ -20,35 +20,35 @@ public class MainForm : Form {
     public readonly ListBox UserList;
 
     private void CreateChatClients() {
-        #region IRC
-        try {
-            IRCChatClient irc = new(Settings.Instance.IrcServerUrl);
-            this.chatClients.Add(irc);
-        }
-        catch (Exception ex){
-            LogFailedChatClient(typeof(IRCChatClient), ex);
-        }
-        #endregion
+//        #region IRC
+//        try {
+//            IRCChatClient irc = new(Settings.Instance.IrcServerUrl);
+//            this.chatClients.Add(irc);
+//        }
+//        catch (Exception ex){
+//            LogFailedChatClient(typeof(IRCChatClient), ex);
+//        }
+//        #endregion
         
-        #region Discord
-        try {
-            DiscordChatClient discord = new(Settings.Instance.DiscordToken);
-            this.chatClients.Add(discord);
-        }
-        catch (Exception ex){
-            LogFailedChatClient(typeof(DiscordChatClient), ex);
-        }
-        #endregion
+//        #region Discord
+//        try {
+//            DiscordChatClient discord = new(Settings.Instance.DiscordToken);
+//            this.chatClients.Add(discord);
+//        }
+//        catch (Exception ex){
+//            LogFailedChatClient(typeof(DiscordChatClient), ex);
+//        }
+//        #endregion
         
-        #region Dummy
-        try {
-            DummyChatClient dummy = new();
-            this.chatClients.Add(dummy);
-        }
-        catch (Exception ex){
-            LogFailedChatClient(typeof(DummyChatClient), ex);
-        }
-        #endregion
+//        #region Dummy
+//        try {
+//            DummyChatClient dummy = new();
+//            this.chatClients.Add(dummy);
+//        }
+//        catch (Exception ex){
+//            LogFailedChatClient(typeof(DummyChatClient), ex);
+//        }
+//        #endregion
 
         #region Taiko.rs
 
