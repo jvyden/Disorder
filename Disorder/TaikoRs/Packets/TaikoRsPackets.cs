@@ -82,6 +82,59 @@ public class ClientStatusUpdatePacket : TaikoRsPacket {
     public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
 }
 
+public class ClientSendMessagePacket : TaikoRsPacket {
+    public ClientSendMessagePacket(string channel, string message) {
+        this.Channel = channel;
+        this.Message = message;
+    }
+    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ClientSendMessage;
+
+    private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
+        ("channel", DataType.String),
+        ("message", DataType.String),
+    };
+
+    public string Channel {
+        get => (string)this.Data["channel"];
+        set => this.Data["channel"] = value;
+    }
+
+    public string Message {
+        get => (string)this.Data["message"];
+        set => this.Data["message"] = value;
+    }
+
+    public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
+}
+
+public class ServerSendMessagePacket : TaikoRsPacket {
+    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ServerSendMessage;
+
+    private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
+        ("sender_id", DataType.UInt),
+        ("channel", DataType.String),
+        ("message", DataType.String),
+    };
+
+    public uint SenderId {
+        get => (uint)this.Data["sender_id"];
+        set => this.Data["sender_id"] = value;
+    }
+
+    public string Channel {
+        get => (string)this.Data["channel"];
+        set => this.Data["channel"] = value;
+    }
+
+    public string Message {
+        get => (string)this.Data["message"];
+        set => this.Data["message"] = value;
+    }
+
+    public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
+}
+
+
 public enum TaikoRsLoginStatus : byte {
     UnknownError = 0,
     Ok = 1,

@@ -84,10 +84,21 @@ public class TaikoRsGuild : IGuild {
                 this.PacketQueue.Enqueue(new ClientStatusUpdatePacket(new UserAction(UserActionType.Idle, "yas shillin' in da house", 0)));
                 break;
             }
+            case TaikoRsPacketId.ServerSendMessage: {
+                ServerSendMessagePacket packet = new();
+                packet.ReadDataFromStream(reader);
+                
+                Logger.Log($"Got message: {packet.Channel}: <{packet.SenderId}>: {packet.Message}", LoggerLevelTaikoRsInfo.Instance);
+                break;
+            }
             default: {
                 throw new NotImplementedException(packetId.ToString());
             }
         }
+    }
+
+    public void SendMessage(string channel, string content) {
+        this.PacketQueue.Enqueue(new ClientSendMessagePacket(channel, content));
     }
         
     public event EventHandler<IChannel>? ChannelAdded;
