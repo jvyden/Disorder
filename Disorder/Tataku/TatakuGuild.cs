@@ -15,7 +15,9 @@ public class TatakuGuild : IGuild {
 
     public string Name { get; set; }
     public long Id { get; set; }
-    public IEnumerable<IChannel> Channels { get; }
+
+    private List<TatakuChannel> channels = new();
+    public IEnumerable<IChannel> Channels => channels;
 
     private readonly long beforeLogin;
     
@@ -59,7 +61,7 @@ public class TatakuGuild : IGuild {
 
     public async Task Process() {
         // Run through everything currently in the packet queue
-        while(this.PacketQueue.TryDequeue(out TatakuPacket? packet) && this.client.IsAlive && packet != null) {
+        while(this.PacketQueue.TryDequeue(out TatakuPacket? packet) && packet != null) {
             await using MemoryStream ms = new();
             await using TatakuWriter writer = new(ms);
 
@@ -91,6 +93,15 @@ public class TatakuGuild : IGuild {
                 // Logged in and authenticated at this point
                 Logger.Log("Login OK, user id is " + packet.UserId, LoggerLevelTatakuInfo.Instance);
                 Logger.Log($"Login took {TimestampHelper.TimestampMillis - this.beforeLogin}ms", LoggerLevelTatakuInfo.Instance);
+
+                this.ChatClient.User = new TatakuUser {
+                    Id = packet.UserId,
+                    Username = Settings.Instance.TatakuUsername,
+                };
+
+                TatakuChannel channel = new("#general", this);
+                this.channels.Add(channel);
+                this.ChannelAdded?.Invoke(this, channel);
                 
                 this.PacketQueue.Enqueue(new ClientStatusUpdatePacket(new UserAction(UserActionType.Idle, "yas shillin' in da house", 0)));
                 break;
@@ -100,6 +111,20 @@ public class TatakuGuild : IGuild {
                 packet.ReadDataFromStream(reader);
                 
                 Logger.Log($"Got message: {packet.Channel}: <{packet.SenderId}>: {packet.Message}", LoggerLevelTatakuInfo.Instance);
+
+                TatakuChannel? channel = this.channels.FirstOrDefault(c => c.Name == packet.Channel);
+                if(channel == null) {
+                    channel = new TatakuChannel(packet.Channel, this);
+                    this.channels.Add(channel);
+                    this.ChannelAdded?.Invoke(this, channel);
+                }
+
+                TatakuMessage message = new(new TatakuUser {
+                    Id = packet.SenderId,
+                    Username = packet.SenderId.ToString(),
+                }, packet.Message);
+                
+                channel.AddMessageToHistory(message);
                 break;
             }
             default: {
@@ -108,8 +133,8 @@ public class TatakuGuild : IGuild {
         }
     }
 
-    public void SendMessage(string channel, string content) {
-        this.PacketQueue.Enqueue(new ClientSendMessagePacket(channel, content));
+    public void SendMessage(string channel, string message) {
+        this.PacketQueue.Enqueue(new ClientSendMessagePacket(channel, message));
     }
         
     public event EventHandler<IChannel>? ChannelAdded;

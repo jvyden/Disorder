@@ -8,7 +8,7 @@ namespace Disorder.Tataku {
 
         private List<TatakuGuild> guilds;
         public IEnumerable<IGuild> Guilds => guilds;
-        public IUser User { get; }
+        public IUser User { get; set; }
         
         public event EventHandler? GuildsUpdated;
         public event EventHandler? OnLoggedIn;
