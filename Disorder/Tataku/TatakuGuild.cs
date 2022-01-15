@@ -16,15 +16,18 @@ public class TatakuGuild : IGuild {
     public string Name { get; set; }
     public long Id { get; set; }
     public IEnumerable<IChannel> Channels { get; }
+
+    private readonly long beforeLogin;
     
     public TatakuGuild(string uri, TatakuChatClient chatClient) {
         this.ChatClient = chatClient;
         this.Name = uri;
 
+        beforeLogin = TimestampHelper.TimestampMillis;
+
         this.client = new WebSocket(uri);
         this.client.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls13 | SslProtocols.Tls12;
 
-        
         #region Disable logging
         #if !DEBUG
         FieldInfo? field = this.client.Log.GetType().GetField("_output", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -87,6 +90,7 @@ public class TatakuGuild : IGuild {
 
                 // Logged in and authenticated at this point
                 Logger.Log("Login OK, user id is " + packet.UserId, LoggerLevelTatakuInfo.Instance);
+                Logger.Log($"Login took {TimestampHelper.TimestampMillis - this.beforeLogin}ms", LoggerLevelTatakuInfo.Instance);
                 
                 this.PacketQueue.Enqueue(new ClientStatusUpdatePacket(new UserAction(UserActionType.Idle, "yas shillin' in da house", 0)));
                 break;
