@@ -18,6 +18,7 @@ public class TatakuGuild : IGuild {
 
     private List<TatakuChannel> channels = new();
     public IEnumerable<IChannel> Channels => channels;
+    public List<TatakuUser> Users { get; } = new();
 
     private readonly long beforeLogin;
     
@@ -98,6 +99,8 @@ public class TatakuGuild : IGuild {
                     Id = packet.UserId,
                     Username = Settings.Instance.TatakuUsername,
                 };
+                
+                Users.Add((TatakuUser)this.ChatClient.User);
 
                 TatakuChannel channel = new("#general", this);
                 this.channels.Add(channel);
@@ -119,12 +122,31 @@ public class TatakuGuild : IGuild {
                     this.ChannelAdded?.Invoke(this, channel);
                 }
 
-                TatakuMessage message = new(new TatakuUser {
-                    Id = packet.SenderId,
-                    Username = packet.SenderId.ToString(),
-                }, packet.Message);
+                TatakuMessage message = new(Users.First(u => u.Id == packet.SenderId), packet.Message);
                 
                 channel.AddMessageToHistory(message);
+                break;
+            }
+            case TatakuPacketId.ServerUserJoined: {
+                ServerUserJoinedPacket packet = new();
+                packet.ReadDataFromStream(reader);
+
+                TatakuUser user = new() {
+                    Id = packet.UserId,
+                    Username = packet.Username,
+                };
+                Users.Add(user);
+                
+                Logger.Log($"User {user} logged in", LoggerLevelTatakuInfo.Instance);
+                break;
+            }
+            case TatakuPacketId.ServerUserLeft: {
+                ServerUserLeftPacket packet = new();
+                packet.ReadDataFromStream(reader);
+
+                TatakuUser user = Users.First(u => u.Id == packet.UserId);
+                Users.Remove(user);
+                Logger.Log($"User {user} logged out", LoggerLevelTatakuInfo.Instance);
                 break;
             }
             default: {

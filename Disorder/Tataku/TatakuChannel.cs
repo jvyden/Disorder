@@ -17,7 +17,7 @@ public class TatakuChannel : IChannel {
     }
 
     public List<TatakuMessage> MessageHistory { get; } = new();
-    public List<TatakuUser> Users { get; } = new();
+    public List<TatakuUser> Users => this.guild.Users;
 
     public async Task<IMessage> SendMessage(string message) {
         this.guild.SendMessage(this.Name, message);

@@ -9,4 +9,7 @@ public class TatakuUser : IUser {
     }
     
     public long Id { get; set; }
+    public override string ToString() {
+        return $"TatakuUser ({nameof(this.Username)}: {this.Username}, {nameof(this.Nickname)}: {this.Nickname})";
+    }
 }

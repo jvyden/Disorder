@@ -134,6 +134,41 @@ public class ServerSendMessagePacket : TatakuPacket {
     public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
 }
 
+public class ServerUserJoinedPacket : TatakuPacket {
+    public override TatakuPacketId PacketId => TatakuPacketId.ServerPermissions;
+
+    private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
+        ("user_id", DataType.UInt),
+        ("username", DataType.String),
+    };
+
+    public string Username {
+        get => (string)this.Data["username"];
+        set => this.Data["username"] = value;
+    }
+
+    public uint UserId {
+        get => (uint)this.Data["user_id"];
+        set => this.Data["user_id"] = value;
+    }
+
+    public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
+}
+
+public class ServerUserLeftPacket : TatakuPacket {
+    public override TatakuPacketId PacketId => TatakuPacketId.ServerUserLeft;
+
+    private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
+        ("user_id", DataType.UInt),
+    };
+
+    public uint UserId {
+        get => (uint)this.Data["user_id"];
+        set => this.Data["user_id"] = value;
+    }
+
+    public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
+}
 
 public enum TatakuLoginStatus : byte {
     UnknownError = 0,
