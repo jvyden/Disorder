@@ -39,7 +39,50 @@ public class ClientUserLoginPacket : TaikoRsPacket {
     public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
 }
 
-public enum LoginStatus : byte {
+public class ServerLoginResponsePacket : TaikoRsPacket {
+    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ServerLoginResponse;
+
+    private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
+        ("status", DataType.Byte),
+        ("user_id", DataType.UInt),
+    };
+
+    public TaikoRsLoginStatus LoginStatus {
+        get => (TaikoRsLoginStatus)this.Data["status"];
+        set => this.Data["status"] = value;
+    }
+
+    public uint UserId {
+        get => (uint)this.Data["user_id"];
+        set => this.Data["user_id"] = value;
+    }
+
+    public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
+}
+
+public class ClientStatusUpdatePacket : TaikoRsPacket {
+    public ClientStatusUpdatePacket(UserAction action) => this.Action = action;
+    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ClientStatusUpdate;
+
+    private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
+        ("action", DataType.UShort),
+        ("action_text", DataType.String),
+        ("mode", DataType.Byte),
+    };
+
+    public UserAction Action {
+        get => new((UserActionType)this.Data["action"], this.Data["action_text"].ToString()!, (byte)this.Data["mode"]);
+        set {
+            this.Data["action"] = value.Action;
+            this.Data["action_text"] = value.ActionText;
+            this.Data["mode"] = value.Mode;
+        }
+    }
+
+    public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
+}
+
+public enum TaikoRsLoginStatus : byte {
     UnknownError = 0,
     Ok = 1,
     BadPassword = 2,
