@@ -2,6 +2,7 @@ using Disorder.Discord;
 using Disorder.Dummy;
 using Disorder.Gui.ListItems;
 using Disorder.IRC;
+using Disorder.TaikoRs;
 using Eto.Drawing;
 using Eto.Forms;
 using Kettu;
@@ -11,7 +12,6 @@ namespace Disorder.Gui.Forms;
 using Disorder;
 
 public class MainForm : Form {
-
     private readonly List<IChatClient> chatClients = new();
 
     public readonly ListBox GuildList;
@@ -49,6 +49,18 @@ public class MainForm : Form {
             LogFailedChatClient(typeof(DummyChatClient), ex);
         }
         #endregion
+
+        #region Taiko.rs
+
+        try {
+            TaikoRsChatClient taikoRs = new("wss://taikors.ayyeve.xyz");
+            this.chatClients.Add(taikoRs);
+        }
+        catch(Exception ex) {
+            LogFailedChatClient(typeof(TaikoRsChatClient), ex);
+        }
+
+        #endregion
     }
 
     private static void LogFailedChatClient(Type chatClientType, Exception ex) {
@@ -61,8 +73,6 @@ public class MainForm : Form {
     public MainForm() {
         Logger.AddLogger(new ConsoleLogger());
         Logger.StartLogging();
-        
-        this.CreateChatClients();
 
         Logger.Log("Constructing main form", LoggerLevelGUIInfo.Instance);
 
@@ -111,6 +121,8 @@ public class MainForm : Form {
         };
 
         this.Content = layout;
+
+        this.CreateChatClients();
 
         ChatClientManager.Initialize(this.chatClients);
 
@@ -222,9 +234,9 @@ public class MainForm : Form {
         this.MessageField.Text = string.Empty;
     }
 
-    public async Task RefreshMessages(IChannel channel) {
+    public async Task RefreshMessages(IChannel channel, int limit = 50) {
         this.MessageList.Items.Clear();
-        IEnumerable<IMessage> messages = await channel.FetchMessages();
+        IEnumerable<IMessage> messages = await channel.FetchMessages(limit);
 
         foreach(IMessage message in messages) this.MessageList.Items.Add(new MessageListItem(message));
 
