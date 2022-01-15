@@ -1,6 +1,6 @@
-namespace Disorder.TaikoRs.Packets;
+namespace Disorder.Tataku.Packets;
 
-public enum TaikoRsPacketId : ushort {
+public enum TatakuPacketId : ushort {
     /// <summary>
     ///     We dont know what packet this is
     /// </summary>

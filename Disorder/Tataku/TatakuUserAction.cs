@@ -1,4 +1,4 @@
-namespace Disorder.TaikoRs;
+namespace Disorder.Tataku;
 
 public class UserAction {
     public UserActionType Action = UserActionType.Idle;

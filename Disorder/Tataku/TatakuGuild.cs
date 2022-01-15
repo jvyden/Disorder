@@ -3,21 +3,21 @@ using System.Reflection;
 using System.Security.Authentication;
 using System.Text;
 using Disorder.Helpers;
-using Disorder.TaikoRs.Packets;
+using Disorder.Tataku.Packets;
 using WebSocketSharp;
 using Logger = Kettu.Logger;
 
-namespace Disorder.TaikoRs; 
+namespace Disorder.Tataku; 
 
-public class TaikoRsGuild : IGuild {
-    public readonly TaikoRsChatClient ChatClient;
+public class TatakuGuild : IGuild {
+    public readonly TatakuChatClient ChatClient;
     private WebSocket client;
 
     public string Name { get; set; }
     public long Id { get; set; }
     public IEnumerable<IChannel> Channels { get; }
     
-    public TaikoRsGuild(string uri, TaikoRsChatClient chatClient) {
+    public TatakuGuild(string uri, TatakuChatClient chatClient) {
         this.ChatClient = chatClient;
         this.Name = uri;
 
@@ -33,16 +33,16 @@ public class TaikoRsGuild : IGuild {
         #endregion
         
         this.client.OnOpen += delegate {
-            Logger.Log("Connected to " + uri, LoggerLevelTaikoRsInfo.Instance);
+            Logger.Log("Connected to " + uri, LoggerLevelTatakuInfo.Instance);
 
-            string username = Settings.Instance.TaikoRsUsername;
-            string password = HashHelper.Sha512Hash(Encoding.UTF8.GetBytes(Settings.Instance.TaikoRsPassword));
+            string username = Settings.Instance.TatakuUsername;
+            string password = HashHelper.Sha512Hash(Encoding.UTF8.GetBytes(Settings.Instance.TatakuPassword));
             
             this.PacketQueue.Enqueue(new ClientUserLoginPacket(username, password));
         };
         this.client.OnMessage += delegate(object? _, MessageEventArgs args) {
             using MemoryStream ms = new(args.RawData);
-            using TaikoRsReader reader = new(ms);
+            using TatakuReader reader = new(ms);
             
             this.HandlePacket(reader);
         };
@@ -50,45 +50,45 @@ public class TaikoRsGuild : IGuild {
         this.client.Connect();
     }
 
-    public readonly ConcurrentQueue<TaikoRsPacket?> PacketQueue = new();
+    public readonly ConcurrentQueue<TatakuPacket?> PacketQueue = new();
 
     public async Task Process() {
         // Run through everything currently in the packet queue
-        while(this.PacketQueue.TryDequeue(out TaikoRsPacket? packet) && this.client.IsAlive && packet != null) {
+        while(this.PacketQueue.TryDequeue(out TatakuPacket? packet) && this.client.IsAlive && packet != null) {
             await using MemoryStream ms = new();
-            await using TaikoRsWriter writer = new(ms);
+            await using TatakuWriter writer = new(ms);
 
             packet.WriteDataToStream(writer);
             this.client.Send(ms.ToArray());
         }
     }
 
-    public void HandlePacket(TaikoRsReader reader) {
-        TaikoRsPacketId packetId = reader.ReadPacketId();
+    public void HandlePacket(TatakuReader reader) {
+        TatakuPacketId packetId = reader.ReadPacketId();
 
         switch(packetId) {
-            case TaikoRsPacketId.ServerLoginResponse: {
+            case TatakuPacketId.ServerLoginResponse: {
                 ServerLoginResponsePacket packet = new();
                 packet.ReadDataFromStream(reader);
 
-                if(packet.LoginStatus != TaikoRsLoginStatus.Ok) {
+                if(packet.LoginStatus != TatakuLoginStatus.Ok) {
                     string errorMessage = "Login failed: " + packet.LoginStatus;
 
-                    Logger.Log(errorMessage, LoggerLevelTaikoRsError.Instance);
+                    Logger.Log(errorMessage, LoggerLevelTatakuError.Instance);
                     throw new Exception(errorMessage);
                 }
 
                 // Logged in and authenticated at this point
-                Logger.Log("Login OK, user id is " + packet.UserId, LoggerLevelTaikoRsInfo.Instance);
+                Logger.Log("Login OK, user id is " + packet.UserId, LoggerLevelTatakuInfo.Instance);
                 
                 this.PacketQueue.Enqueue(new ClientStatusUpdatePacket(new UserAction(UserActionType.Idle, "yas shillin' in da house", 0)));
                 break;
             }
-            case TaikoRsPacketId.ServerSendMessage: {
+            case TatakuPacketId.ServerSendMessage: {
                 ServerSendMessagePacket packet = new();
                 packet.ReadDataFromStream(reader);
                 
-                Logger.Log($"Got message: {packet.Channel}: <{packet.SenderId}>: {packet.Message}", LoggerLevelTaikoRsInfo.Instance);
+                Logger.Log($"Got message: {packet.Channel}: <{packet.SenderId}>: {packet.Message}", LoggerLevelTatakuInfo.Instance);
                 break;
             }
             default: {

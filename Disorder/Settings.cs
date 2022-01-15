@@ -58,9 +58,9 @@ public class Settings {
     public string IrcUsername { get; set; } = Environment.UserName;
     public string IrcAutoJoinList { get; set; } = "#general";
 
-    public string TaikoRsUsername { get; set; } = Environment.UserName;
+    public string TatakuUsername { get; set; } = Environment.UserName;
 
-    public string TaikoRsPassword { get; set; } = "";
+    public string TatakuPassword { get; set; } = "";
 
     public string DiscordToken { get; set; }
 

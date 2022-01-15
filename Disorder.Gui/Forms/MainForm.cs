@@ -2,7 +2,7 @@ using Disorder.Discord;
 using Disorder.Dummy;
 using Disorder.Gui.ListItems;
 using Disorder.IRC;
-using Disorder.TaikoRs;
+using Disorder.Tataku;
 using Eto.Drawing;
 using Eto.Forms;
 using Kettu;
@@ -53,11 +53,11 @@ public class MainForm : Form {
         #region Taiko.rs
 
         try {
-            TaikoRsChatClient taikoRs = new("wss://taikors.ayyeve.xyz");
-            this.chatClients.Add(taikoRs);
+            TatakuChatClient tataku = new("wss://taikors.ayyeve.xyz");
+            this.chatClients.Add(tataku);
         }
         catch(Exception ex) {
-            LogFailedChatClient(typeof(TaikoRsChatClient), ex);
+            LogFailedChatClient(typeof(TatakuChatClient), ex);
         }
 
         #endregion

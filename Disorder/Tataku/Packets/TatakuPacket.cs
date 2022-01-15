@@ -1,13 +1,13 @@
-namespace Disorder.TaikoRs.Packets; 
+namespace Disorder.Tataku.Packets; 
 
-public abstract class TaikoRsPacket {
+public abstract class TatakuPacket {
     protected Dictionary<string, object> Data = new();
-    public virtual TaikoRsPacketId PacketId => TaikoRsPacketId.Unknown;
+    public virtual TatakuPacketId PacketId => TatakuPacketId.Unknown;
 
     protected static readonly List<(string name, DataType type)> BlankDataDefinition = new();
     public virtual List<(string name, DataType type)> DataDefinition => BlankDataDefinition;
     
-    public void ReadDataFromStream(TaikoRsReader reader) {
+    public void ReadDataFromStream(TatakuReader reader) {
         foreach ((string name, DataType type) in this.DataDefinition)
             switch (type) {
                 case DataType.Byte:
@@ -48,7 +48,7 @@ public abstract class TaikoRsPacket {
             }
     }
     
-    public void WriteDataToStream(TaikoRsWriter writer) {
+    public void WriteDataToStream(TatakuWriter writer) {
         #region Header
 
         writer.Write((ushort)this.PacketId);

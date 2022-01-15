@@ -1,13 +1,13 @@
-namespace Disorder.TaikoRs.Packets;
+namespace Disorder.Tataku.Packets;
 
-public class ClientUserLoginPacket : TaikoRsPacket {
+public class ClientUserLoginPacket : TatakuPacket {
     public ClientUserLoginPacket(string username, string password) {
         this.Username = username;
         this.Password = password;
         this.ProtocolVersion = 1;
         this.Game = "Disorder\nN/A";
     }
-    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ClientUserLogin;
+    public override TatakuPacketId PacketId => TatakuPacketId.ClientUserLogin;
 
     private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
         ("protocol_version", DataType.UShort),
@@ -39,16 +39,16 @@ public class ClientUserLoginPacket : TaikoRsPacket {
     public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
 }
 
-public class ServerLoginResponsePacket : TaikoRsPacket {
-    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ServerLoginResponse;
+public class ServerLoginResponsePacket : TatakuPacket {
+    public override TatakuPacketId PacketId => TatakuPacketId.ServerLoginResponse;
 
     private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
         ("status", DataType.Byte),
         ("user_id", DataType.UInt),
     };
 
-    public TaikoRsLoginStatus LoginStatus {
-        get => (TaikoRsLoginStatus)this.Data["status"];
+    public TatakuLoginStatus LoginStatus {
+        get => (TatakuLoginStatus)this.Data["status"];
         set => this.Data["status"] = value;
     }
 
@@ -60,9 +60,9 @@ public class ServerLoginResponsePacket : TaikoRsPacket {
     public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
 }
 
-public class ClientStatusUpdatePacket : TaikoRsPacket {
+public class ClientStatusUpdatePacket : TatakuPacket {
     public ClientStatusUpdatePacket(UserAction action) => this.Action = action;
-    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ClientStatusUpdate;
+    public override TatakuPacketId PacketId => TatakuPacketId.ClientStatusUpdate;
 
     private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
         ("action", DataType.UShort),
@@ -82,12 +82,12 @@ public class ClientStatusUpdatePacket : TaikoRsPacket {
     public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
 }
 
-public class ClientSendMessagePacket : TaikoRsPacket {
+public class ClientSendMessagePacket : TatakuPacket {
     public ClientSendMessagePacket(string channel, string message) {
         this.Channel = channel;
         this.Message = message;
     }
-    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ClientSendMessage;
+    public override TatakuPacketId PacketId => TatakuPacketId.ClientSendMessage;
 
     private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
         ("channel", DataType.String),
@@ -107,8 +107,8 @@ public class ClientSendMessagePacket : TaikoRsPacket {
     public override List<(string name, DataType type)> DataDefinition => DATA_DEFINITION;
 }
 
-public class ServerSendMessagePacket : TaikoRsPacket {
-    public override TaikoRsPacketId PacketId => TaikoRsPacketId.ServerSendMessage;
+public class ServerSendMessagePacket : TatakuPacket {
+    public override TatakuPacketId PacketId => TatakuPacketId.ServerSendMessage;
 
     private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
         ("sender_id", DataType.UInt),
@@ -135,7 +135,7 @@ public class ServerSendMessagePacket : TaikoRsPacket {
 }
 
 
-public enum TaikoRsLoginStatus : byte {
+public enum TatakuLoginStatus : byte {
     UnknownError = 0,
     Ok = 1,
     BadPassword = 2,
