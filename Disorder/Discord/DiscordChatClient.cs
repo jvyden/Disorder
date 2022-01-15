@@ -7,7 +7,9 @@ public class DiscordChatClient : IChatClient {
 
     private readonly List<DiscordGuild> guilds = new();
 
-    public DiscordChatClient(string token) {
+    public DiscordChatClient(string? token) {
+        if(token == null) throw new ArgumentNullException(nameof(token));
+        
         Exception? exceptionIfFail = null;
         
         // Dirty hack to fix gui

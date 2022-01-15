@@ -65,7 +65,7 @@ public class ClientStatusUpdatePacket : TatakuPacket {
     public override TatakuPacketId PacketId => TatakuPacketId.ClientStatusUpdate;
 
     private static readonly List<(string name, DataType type)> DATA_DEFINITION = new() {
-        ("action", DataType.UShort),
+        ("action", DataType.Byte),
         ("action_text", DataType.String),
         ("mode", DataType.Byte),
     };
