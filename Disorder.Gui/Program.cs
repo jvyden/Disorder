@@ -5,6 +5,8 @@ namespace Disorder.Gui;
 
 public static class Program {
     public static void Main(string[] args) {
-        new Application().Run(new MainForm());
+        new Application {
+            UIThreadCheckMode = UIThreadCheckMode.Warning,
+        }.Run(new MainForm());
     }
 }
