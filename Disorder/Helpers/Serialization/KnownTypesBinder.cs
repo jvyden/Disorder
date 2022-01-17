@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 namespace Disorder.Helpers.Serialization; 
 
 public class KnownTypesBinder : ISerializationBinder {
-    public List<Type> KnownTypes { get; init; }
+    public IList<Type> KnownTypes { get; set; }
 
     public Type BindToType(string assemblyName, string typeName) {
         return KnownTypes.SingleOrDefault(t => t.Name == typeName);

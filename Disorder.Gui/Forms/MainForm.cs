@@ -1,8 +1,5 @@
 using Disorder.Discord;
-using Disorder.Dummy;
 using Disorder.Gui.ListItems;
-using Disorder.IRC;
-using Disorder.Tataku;
 using Eto.Drawing;
 using Eto.Forms;
 using Kettu;

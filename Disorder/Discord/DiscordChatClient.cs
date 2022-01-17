@@ -47,4 +47,5 @@ public class DiscordChatClient : IChatClient {
 
     public event EventHandler? GuildsUpdated;
     public event EventHandler? OnLoggedIn;
+    public void Initialize() {}
 }

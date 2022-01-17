@@ -19,4 +19,6 @@ public class IRCChatClient : IChatClient {
     public IUser User { get; internal set; } = new IRCUser();
     public event EventHandler? GuildsUpdated;
     public event EventHandler? OnLoggedIn;
+    
+    public void Initialize() {}
 }

@@ -1,7 +1,5 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using Disorder.Discord;
-using Disorder.Dummy;
 using GLib;
 using Kettu;
 
@@ -16,14 +14,18 @@ public static class ChatClientManager {
         ExceptionManager.UnhandledException += onExit;
 
         foreach(IChatClient chatClient in chatClients) {
+            Logger.Log("Initializing " + chatClient, LoggerLevelDisorderInfo.Instance);
+            chatClient.Initialize();
+            
             chatClientQueue.Enqueue(chatClient);
+            
             chatClient.OnLoggedIn += delegate {
                 Logger.Log($"{chatClient} logged in as {chatClient.User}", LoggerLevelDisorderInfo.Instance);
             };
         }
 
         int threads = Math.Min(Environment.ProcessorCount, chatClients.Count);
-        Logger.Log($"Spinning up {threads} worker threads", LoggerLevelDummyInfo.Instance);
+        Logger.Log($"Spinning up {threads} worker threads", LoggerLevelDisorderInfo.Instance);
 
         for(int i = 0; i < threads; i++)
             Task.Factory.StartNew(async () => {
@@ -35,7 +37,7 @@ public static class ChatClientManager {
     }
 
     private static void onExit(object? sender, EventArgs e) {
-        Logger.Log("Exiting safely...", LoggerLevelDummyInfo.Instance);
+        Logger.Log("Exiting safely...", LoggerLevelDisorderInfo.Instance);
         Settings.Instance.Save();
     }
 

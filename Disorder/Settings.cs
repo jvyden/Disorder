@@ -1,7 +1,4 @@
-using Disorder.Discord;
-using Disorder.Dummy;
 using Disorder.Helpers.Serialization;
-using Disorder.Tataku;
 using Kettu;
 using Newtonsoft.Json;
 
@@ -16,25 +13,26 @@ public class Settings {
 
     public static readonly string ConfigFile = Path.Combine(ConfigPath, configFileName);
 
-    private static readonly List<Type> chatClients = AppDomain.CurrentDomain.GetAssemblies()
+    private static readonly List<Type> chatClientTypes = AppDomain.CurrentDomain.GetAssemblies()
         .SelectMany(s => s.GetTypes())
         .Where(p => typeof(IChatClient).IsAssignableFrom(p))
-        .Where(p => p != typeof(DummyChatClient))
         .Where(p => p != typeof(IChatClient))
         .ToList();
+
+    private static readonly KnownTypesBinder knownTypesBinder = new() {
+        KnownTypes = chatClientTypes,
+    };
     
-    private static readonly JsonSerializerSettings serializerSettings = new() {
+    private static JsonSerializerSettings serializerSettings => new() {
         Formatting = Formatting.Indented,
         TypeNameHandling = TypeNameHandling.Auto,
-        SerializationBinder = new KnownTypesBinder {
-            KnownTypes = chatClients,
-        },
+        SerializationBinder = knownTypesBinder,
     };
 
     static Settings() {
         Directory.CreateDirectory(ConfigPath);
 
-        Logger.Log($"Found chat client types: {string.Join(", ", chatClients.Select(c => c.Name))}", LoggerLevelDisorderInfo.Instance);
+        Logger.Log($"Found chat client types: {string.Join(", ", chatClientTypes.Select(c => c.Name))}", LoggerLevelDisorderInfo.Instance);
 
         if(File.Exists(ConfigFile)) {
             string configFile = File.ReadAllText(ConfigFile);
@@ -62,7 +60,7 @@ public class Settings {
             );
         }
     }
-    public static Settings Instance { get; private set; }
+    public static Settings Instance { get; }
 
     [JsonProperty("ConfigVersionDoNotModifyOrYouWillBeSlapped")]
     public int ConfigVersion { get; set; } = CurrentConfigVersion;

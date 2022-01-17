@@ -11,4 +11,6 @@ public interface IChatClient {
 
     public event EventHandler GuildsUpdated;
     public event EventHandler? OnLoggedIn;
+
+    public void Initialize();
 }

@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Reflection;
 using System.Security.Authentication;
 using System.Text;
 using Disorder.Helpers;
@@ -40,8 +39,7 @@ public class TatakuGuild : IGuild {
         
         this.client.OnOpen += delegate {
             Logger.Log("Connected to " + uri, LoggerLevelTatakuInfo.Instance);
-            
-            Logger.Log($"Attempting to log in as {this.ChatClient.Username} with password {this.ChatClient.Password}", LoggerLevelTatakuInfo.Instance);
+            Logger.Log($"Attempting to log in as {this.ChatClient.Username}", LoggerLevelTatakuInfo.Instance);
 
             string username = this.ChatClient.Username;
             string password = HashHelper.Sha512Hash(Encoding.UTF8.GetBytes(this.ChatClient.Password));
