@@ -30,15 +30,15 @@ public class MainForm : Form {
         }
         #endregion
         
-        #region Discord
-        try {
-            DiscordChatClient discord = new(Settings.Instance.DiscordToken);
-            this.chatClients.Add(discord);
-        }
-        catch (Exception ex){
-            LogFailedChatClient(typeof(DiscordChatClient), ex);
-        }
-        #endregion
+//        #region Discord
+//        try {
+//            DiscordChatClient discord = new(Settings.Instance.DiscordToken);
+//            this.chatClients.Add(discord);
+//        }
+//        catch (Exception ex){
+//            LogFailedChatClient(typeof(DiscordChatClient), ex);
+//        }
+//        #endregion
         
         #region Dummy
         try {

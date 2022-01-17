@@ -14,7 +14,7 @@ public class UserAction {
     public UserAction() {}
 }
 
-public enum UserActionType : ushort {
+public enum UserActionType : byte {
     Unknown = 0,
     Idle,
     Ingame,

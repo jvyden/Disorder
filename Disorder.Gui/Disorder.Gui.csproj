@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
@@ -8,12 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Eto.Forms" Version="2.6.0"/>
-        <PackageReference Include="Eto.Platform.Gtk" Version="2.6.0"/>
+        <PackageReference Include="Eto.Forms" Version="2.6.1"/>
+        <PackageReference Include="Eto.Platform.Gtk" Version="2.6.1"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Disorder\Disorder.csproj"/>
     </ItemGroup>
-
 </Project>

@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using Disorder.Discord;
 using Disorder.Dummy;
 using GLib;
 using Kettu;
@@ -45,6 +47,9 @@ public static class ChatClientManager {
             }
             catch(Exception ex) {
                 Logger.Log($"{ex.GetType()} occured during processing {chatClient.GetType()}!", LoggerLevelDisorderError.Instance);
+                foreach(string line in ex.ToString().Split("\n")) {
+                    Logger.Log($"{line}", LoggerLevelDiscordError.Instance);
+                }
             }
             finally {
                 chatClientQueue.Enqueue(chatClient);
