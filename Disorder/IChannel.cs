@@ -1,9 +1,12 @@
+using Newtonsoft.Json;
+
 namespace Disorder;
 
 public interface IChannel {
     public string Name { get; set; }
     public long Id { get; set; }
 
+    [JsonIgnore]
     public IGuild Guild { get; set; }
 
     public Task<IMessage> SendMessage(string message);

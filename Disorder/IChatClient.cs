@@ -1,8 +1,12 @@
+using Newtonsoft.Json;
+
 namespace Disorder;
 
 public interface IChatClient {
+    [JsonIgnore]
     public IEnumerable<IGuild> Guilds { get; }
 
+    [JsonIgnore]
     public IUser User { get; }
 
     public event EventHandler GuildsUpdated;

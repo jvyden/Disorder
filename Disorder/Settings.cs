@@ -1,39 +1,52 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Disorder.Discord;
+using Disorder.Dummy;
+using Disorder.Helpers.Serialization;
+using Disorder.Tataku;
 using Kettu;
+using Newtonsoft.Json;
 
 namespace Disorder;
 
 public class Settings {
     private const string configFileName = "disorder.config.json";
 
-    public const int CurrentConfigVersion = 3; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
+    public const int CurrentConfigVersion = 5; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
 
     public static readonly string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Disorder");
 
     public static readonly string ConfigFile = Path.Combine(ConfigPath, configFileName);
 
+    private static readonly List<Type> chatClients = AppDomain.CurrentDomain.GetAssemblies()
+        .SelectMany(s => s.GetTypes())
+        .Where(p => typeof(IChatClient).IsAssignableFrom(p))
+        .Where(p => p != typeof(DummyChatClient))
+        .Where(p => p != typeof(IChatClient))
+        .ToList();
+    
+    private static readonly JsonSerializerSettings serializerSettings = new() {
+        Formatting = Formatting.Indented,
+        TypeNameHandling = TypeNameHandling.Auto,
+        SerializationBinder = new KnownTypesBinder {
+            KnownTypes = chatClients,
+        },
+    };
+
     static Settings() {
         Directory.CreateDirectory(ConfigPath);
+
+        Logger.Log($"Found chat client types: {string.Join(", ", chatClients.Select(c => c.Name))}", LoggerLevelDisorderInfo.Instance);
 
         if(File.Exists(ConfigFile)) {
             string configFile = File.ReadAllText(ConfigFile);
 
-            Instance = JsonSerializer.Deserialize<Settings>(configFile) ?? throw new ArgumentNullException(nameof(ConfigFile));
+            Instance = JsonConvert.DeserializeObject<Settings>(configFile, serializerSettings) ?? throw new ArgumentNullException(nameof(ConfigFile));
 
             if(Instance.ConfigVersion >= CurrentConfigVersion) return;
 
             Logger.Log($"Upgrading config file from version {Instance.ConfigVersion} to version {CurrentConfigVersion}", LoggerLevelDisorderInfo.Instance);
             Instance.ConfigVersion = CurrentConfigVersion;
-            configFile = JsonSerializer.Serialize
-            (
-                Instance,
-                typeof(Settings),
-                new JsonSerializerOptions {
-                    WriteIndented = true,
-                }
-            );
-
+            
+            configFile = JsonConvert.SerializeObject(Instance, typeof(Settings), serializerSettings);
             File.WriteAllText(ConfigFile, configFile);
         }
         else {
@@ -51,29 +64,19 @@ public class Settings {
     }
     public static Settings Instance { get; private set; }
 
-    [JsonPropertyName("ConfigVersionDoNotModifyOrYouWillBeSlapped")]
+    [JsonProperty("ConfigVersionDoNotModifyOrYouWillBeSlapped")]
     public int ConfigVersion { get; set; } = CurrentConfigVersion;
 
     public string IrcServerUrl { get; set; } = "localhost";
     public string IrcUsername { get; set; } = Environment.UserName;
     public string IrcAutoJoinList { get; set; } = "#general";
 
-    public string TatakuUsername { get; set; } = Environment.UserName;
+    public string? DiscordToken { get; set; }
 
-    public string TatakuPassword { get; set; } = "";
-
-    public string DiscordToken { get; set; }
+    public List<IChatClient> ChatClients { get; set; } = new();
 
     public void Save() {
-        string configFile = JsonSerializer.Serialize
-        (
-            this,
-            typeof(Settings),
-            new JsonSerializerOptions {
-                WriteIndented = true,
-            }
-        );
-
+        string configFile = JsonConvert.SerializeObject(this, typeof(Settings), serializerSettings);
         File.WriteAllText(ConfigFile, configFile);
     }
 }

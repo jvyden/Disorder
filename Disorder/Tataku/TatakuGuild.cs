@@ -40,9 +40,11 @@ public class TatakuGuild : IGuild {
         
         this.client.OnOpen += delegate {
             Logger.Log("Connected to " + uri, LoggerLevelTatakuInfo.Instance);
+            
+            Logger.Log($"Attempting to log in as {this.ChatClient.Username} with password {this.ChatClient.Password}", LoggerLevelTatakuInfo.Instance);
 
-            string username = Settings.Instance.TatakuUsername;
-            string password = HashHelper.Sha512Hash(Encoding.UTF8.GetBytes(Settings.Instance.TatakuPassword));
+            string username = this.ChatClient.Username;
+            string password = HashHelper.Sha512Hash(Encoding.UTF8.GetBytes(this.ChatClient.Password));
             
             this.PacketQueue.Enqueue(new ClientUserLoginPacket(username, password));
         };
@@ -97,7 +99,7 @@ public class TatakuGuild : IGuild {
 
                 this.ChatClient.User = new TatakuUser {
                     Id = packet.UserId,
-                    Username = Settings.Instance.TatakuUsername,
+                    Username = this.ChatClient.Username,
                 };
                 
                 Users.Add((TatakuUser)this.ChatClient.User);

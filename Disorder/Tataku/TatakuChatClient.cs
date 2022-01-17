@@ -1,16 +1,18 @@
-namespace Disorder.Tataku {
-    public class TatakuChatClient : IChatClient {
-        public TatakuChatClient(string uri) {
-            this.guilds = new List<TatakuGuild>(1);
-            
-            this.guilds.Add(new TatakuGuild(uri, this));
-        }
+namespace Disorder.Tataku; 
 
-        private List<TatakuGuild> guilds;
-        public IEnumerable<IGuild> Guilds => guilds;
-        public IUser User { get; set; }
+public class TatakuChatClient : IChatClient {
+//    public TatakuChatClient() {
+//        this.guilds.Add(new TatakuGuild("wss://taikors.ayyeve.xyz", this));
+//    }
+
+    public string? Username { get; set; }
+
+    public string? Password { get; set; }
+
+    private readonly List<TatakuGuild> guilds = new(1);
+    public IEnumerable<IGuild> Guilds => guilds;
+    public IUser User { get; set; }
         
-        public event EventHandler? GuildsUpdated;
-        public event EventHandler? OnLoggedIn;
-    }
+    public event EventHandler? GuildsUpdated;
+    public event EventHandler? OnLoggedIn;
 }

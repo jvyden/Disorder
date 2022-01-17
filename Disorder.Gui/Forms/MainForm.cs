@@ -12,64 +12,13 @@ namespace Disorder.Gui.Forms;
 using Disorder;
 
 public class MainForm : Form {
-    private readonly List<IChatClient> chatClients = new();
-
     public readonly ListBox GuildList;
     public readonly TextBox MessageField;
     public readonly ListBox MessageList;
     public readonly ListBox UserList;
 
-    private void CreateChatClients() {
-        #region IRC
-        try {
-            IRCChatClient irc = new(Settings.Instance.IrcServerUrl);
-            this.chatClients.Add(irc);
-        }
-        catch (Exception ex){
-            LogFailedChatClient(typeof(IRCChatClient), ex);
-        }
-        #endregion
-        
-//        #region Discord
-//        try {
-//            DiscordChatClient discord = new(Settings.Instance.DiscordToken);
-//            this.chatClients.Add(discord);
-//        }
-//        catch (Exception ex){
-//            LogFailedChatClient(typeof(DiscordChatClient), ex);
-//        }
-//        #endregion
-        
-        #region Dummy
-        try {
-            DummyChatClient dummy = new();
-            this.chatClients.Add(dummy);
-        }
-        catch (Exception ex){
-            LogFailedChatClient(typeof(DummyChatClient), ex);
-        }
-        #endregion
+    private readonly List<IChatClient> chatClients;
 
-        #region Taiko.rs
-
-        try {
-            TatakuChatClient tataku = new("wss://taikors.ayyeve.xyz");
-            this.chatClients.Add(tataku);
-        }
-        catch(Exception ex) {
-            LogFailedChatClient(typeof(TatakuChatClient), ex);
-        }
-
-        #endregion
-    }
-
-    private static void LogFailedChatClient(Type chatClientType, Exception ex) {
-        Logger.Log(
-            $"{ex.GetType()} creating {chatClientType.Name}! Details: {ex.Message}", 
-            LoggerLevelClientCreationError.Instance
-        );
-    }
-    
     public MainForm() {
         Logger.AddLogger(new ConsoleLogger());
         Logger.StartLogging();
@@ -122,7 +71,7 @@ public class MainForm : Form {
 
         this.Content = layout;
 
-        this.CreateChatClients();
+        this.chatClients = Settings.Instance.ChatClients;
 
         ChatClientManager.Initialize(this.chatClients);
 
