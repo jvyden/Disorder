@@ -4,13 +4,20 @@ public class IRCUser : IUser {
     public string Hostname { get; set; } = "localhost";
 
     // nickname!username@hostname
-    public string Username { get; set; } = Settings.Instance.IrcUsername;
-    public string Nickname { get; set; } = Settings.Instance.IrcUsername;
+    public string Username { get; set; }
+    public string Nickname { get; set; }
     public long Id { get; set; }
 
     public static IRCUser FromCloak(string cloak) {
         int indexOfNicknameSplit = cloak.IndexOf('!');
         int indexOfHostnameSplit = cloak.IndexOf('@');
+
+        if(indexOfHostnameSplit == -1 && indexOfNicknameSplit == -1) {
+            return new IRCUser {
+                Username = cloak,
+                Nickname = cloak,
+            };
+        }
 
         string nickname = cloak.Substring(0, indexOfNicknameSplit);
         string username = cloak.Substring(indexOfNicknameSplit + 1, indexOfHostnameSplit - indexOfNicknameSplit - 1);

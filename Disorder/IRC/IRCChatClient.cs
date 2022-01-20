@@ -1,24 +1,38 @@
+using Newtonsoft.Json;
+
 namespace Disorder.IRC;
 
 public class IRCChatClient : IChatClient {
-    private readonly List<IRCGuild> guilds;
-
-    public IRCChatClient(string uri) {
-        this.guilds = new List<IRCGuild>(1) {
-            new(uri, this),
-        };
-
-        this.GuildsUpdated?.Invoke(this, null);
-    }
+    private List<IRCGuild> guilds;
 
     internal void InvokeLoggedIn() {
         this.OnLoggedIn?.Invoke(this, null);
     }
 
     public IEnumerable<IGuild> Guilds => this.guilds;
-    public IUser User { get; internal set; } = new IRCUser();
+    
+    [JsonIgnore]
+    public IUser User { get; internal set; }
+    
     public event EventHandler? GuildsUpdated;
     public event EventHandler? OnLoggedIn;
-    
-    public void Initialize() {}
+
+    public string ServerUrl { get; set; } = "localhost";
+
+    public string Username { get; set; } = Environment.UserName;
+
+    public string AutoJoinList { get; set; } = "#general";
+
+    public void Initialize() {
+        this.User = new IRCUser {
+            Username = Username,
+            Nickname = Username,
+        };
+        
+        this.guilds = new List<IRCGuild>(1) {
+            new(ServerUrl, this),
+        };
+
+        this.GuildsUpdated?.Invoke(this, null);
+    }
 }

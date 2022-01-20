@@ -20,7 +20,6 @@ public class SettingsForm : Form {
 
         List<SettingsLayout> settingsLayouts = new() {
             new GeneralSettingsLayout(),
-            new IRCSettingsLayout(),
         };
 
         this.CategoryList = new ListBox { Size = new Size(200, -1) };

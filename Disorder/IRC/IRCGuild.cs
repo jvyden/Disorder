@@ -55,9 +55,12 @@ public class IRCGuild : IGuild {
     }
 
     private void autoJoin() {
-        string[] autoJoinChannels = Settings.Instance.IrcAutoJoinList.Split(',');
+        string[] autoJoinChannels = this.ChatClient.AutoJoinList.Split(',');
 
-        foreach(string channel in autoJoinChannels) this.Stream.RunIRCCommand("JOIN " + channel.Trim());
+        foreach(string channel in autoJoinChannels) {
+            Logger.Log("Auto-joining " + channel.Trim(), LoggerLevelIRCInfo.Instance);
+            this.Stream.RunIRCCommand("JOIN " + channel.Trim());
+        }
     }
 
     public void HandleLine(string line) {
@@ -109,7 +112,7 @@ public class IRCGuild : IGuild {
             case "001": { // Registered
                 this.ChatClient.InvokeLoggedIn();
 
-                this.ChatClient.User = IRCUser.FromCloak(trail.Replace("Welcome to the Internet Relay Network ", ""));
+                this.ChatClient.User = IRCUser.FromCloak(trail.Substring(trail.LastIndexOf(' ') + 1));
                 this.Users.Add((IRCUser)this.ChatClient.User);
                 this.autoJoin();
                 break;
