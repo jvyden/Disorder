@@ -7,7 +7,7 @@ namespace Disorder;
 public class Settings {
     private const string configFileName = "disorder.config.json";
 
-    public const int CurrentConfigVersion = 7; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
+    public const int CurrentConfigVersion = 8; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
 
     public static readonly string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Disorder");
 
@@ -64,7 +64,6 @@ public class Settings {
 
     [JsonProperty("ConfigVersionDoNotModifyOrYouWillBeSlapped")]
     public int ConfigVersion { get; set; } = CurrentConfigVersion;
-    public string? DiscordToken { get; set; }
 
     public List<IChatClient> ChatClients { get; set; } = new();
 

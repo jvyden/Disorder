@@ -1,8 +1,10 @@
 using Discord;
+using Newtonsoft.Json;
 
 namespace Disorder.Discord;
 
 public class DiscordChatClient : IChatClient {
+    [JsonIgnore]
     public DiscordClient Client;
 
     private readonly List<DiscordGuild> guilds = new();
