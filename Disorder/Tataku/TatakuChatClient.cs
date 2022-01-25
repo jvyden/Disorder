@@ -3,10 +3,13 @@ using Newtonsoft.Json;
 namespace Disorder.Tataku; 
 
 public class TatakuChatClient : IChatClient {
+    [ConfigurableProperty("Username")]
     public string Username { get; set; }
     
+    [ConfigurableProperty("Password", true)]
     public string Password { get; set; }
     
+    [ConfigurableProperty("Server Url")]
     public string ServerUrl { get; set; }
 
     private readonly List<TatakuGuild> guilds = new(1);
@@ -20,5 +23,8 @@ public class TatakuChatClient : IChatClient {
         this.guilds.Add(new TatakuGuild(ServerUrl, this));
         
         this.GuildsUpdated?.Invoke(this, null);
+    }
+    public override string ToString() {
+        return $"{nameof(TatakuChatClient)} (url: {this.ServerUrl})";
     }
 }

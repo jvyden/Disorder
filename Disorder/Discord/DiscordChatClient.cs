@@ -7,16 +7,22 @@ public class DiscordChatClient : IChatClient {
 
     private readonly List<DiscordGuild> guilds = new();
 
-    public DiscordChatClient(string? token) {
-        if(token == null) throw new ArgumentNullException(nameof(token));
-        
+    [ConfigurableProperty("Token", true)]
+    public string Token { get; set; }
+
+    public IEnumerable<IGuild> Guilds => this.guilds;
+    public IUser User { get; }
+
+    public event EventHandler? GuildsUpdated;
+    public event EventHandler? OnLoggedIn;
+    public void Initialize() {
         Exception? exceptionIfFail = null;
-        
+
         // Dirty hack to fix gui
         // TODO: find the actual problem
         Task.Factory.StartNew(() => {
             try {
-                this.Client = new DiscordClient(token, new DiscordConfig {
+                this.Client = new DiscordClient(Token, new DiscordConfig {
                     RetryOnRateLimit = true,
                 });
             }
@@ -36,16 +42,13 @@ public class DiscordChatClient : IChatClient {
             this.OnLoggedIn?.Invoke(this, null);
         }).Wait();
 
-        if (exceptionIfFail != null)
+        if(exceptionIfFail != null)
             throw exceptionIfFail;
 
         this.GuildsUpdated?.Invoke(this, null);
     }
 
-    public IEnumerable<IGuild> Guilds => this.guilds;
-    public IUser User { get; }
-
-    public event EventHandler? GuildsUpdated;
-    public event EventHandler? OnLoggedIn;
-    public void Initialize() {}
+    public override string ToString() {
+        return $"{nameof(DiscordChatClient)} (u: {User?.Username})";
+    }
 }

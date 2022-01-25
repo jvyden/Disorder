@@ -8,6 +8,6 @@ public class ChatClientListItem : ListItem {
     public ChatClientListItem(IChatClient chatClient) {
         this.ChatClient = chatClient;
 
-        this.Text = $"{chatClient.GetType().Name}";
+        this.Text = chatClient.ToString();
     }
 }

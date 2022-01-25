@@ -13,4 +13,6 @@ public interface IChatClient {
     public event EventHandler? OnLoggedIn;
 
     public void Initialize();
+
+    public string ToString();
 }

@@ -16,11 +16,14 @@ public class IRCChatClient : IChatClient {
     
     public event EventHandler? GuildsUpdated;
     public event EventHandler? OnLoggedIn;
-
+    
+    [ConfigurableProperty("Server Url")]
     public string ServerUrl { get; set; } = "localhost";
 
+    [ConfigurableProperty("Nickname")]
     public string Username { get; set; } = Environment.UserName;
 
+    [ConfigurableProperty("Auto-join list")]
     public string AutoJoinList { get; set; } = "#general";
 
     public void Initialize() {
@@ -34,5 +37,9 @@ public class IRCChatClient : IChatClient {
         };
 
         this.GuildsUpdated?.Invoke(this, null);
+    }
+
+    public override string ToString() {
+        return $"{nameof(IRCChatClient)} (url: {this.ServerUrl})";
     }
 }
