@@ -13,14 +13,14 @@ public class Settings {
 
     public static readonly string ConfigFile = Path.Combine(ConfigPath, configFileName);
 
-    private static readonly List<Type> chatClientTypes = AppDomain.CurrentDomain.GetAssemblies()
+    public static readonly List<Type> ChatClientTypes = AppDomain.CurrentDomain.GetAssemblies()
         .SelectMany(s => s.GetTypes())
         .Where(p => typeof(IChatClient).IsAssignableFrom(p))
         .Where(p => p != typeof(IChatClient))
         .ToList();
 
     private static readonly KnownTypesBinder knownTypesBinder = new() {
-        KnownTypes = chatClientTypes,
+        KnownTypes = ChatClientTypes,
     };
     
     private static JsonSerializerSettings serializerSettings => new() {
@@ -32,7 +32,7 @@ public class Settings {
     static Settings() {
         Directory.CreateDirectory(ConfigPath);
 
-        Logger.Log($"Found chat client types: {string.Join(", ", chatClientTypes.Select(c => c.Name))}", LoggerLevelDisorderInfo.Instance);
+        Logger.Log($"Found chat client types: {string.Join(", ", ChatClientTypes.Select(c => c.Name))}", LoggerLevelDisorderInfo.Instance);
 
         if(File.Exists(ConfigFile)) {
             string configFile = File.ReadAllText(ConfigFile);

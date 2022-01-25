@@ -25,7 +25,7 @@ public class GeneralSettingsLayout : SettingsLayout {
         };
         
         buttonLayout.BeginHorizontal();
-        buttonLayout.Add(new Button(this.deleteButtonClicked) { Text = "Add" });
+        buttonLayout.Add(new Button(this.addButtonClicked) { Text = "Add" });
         buttonLayout.Add(new Button(this.editButtonClicked) { Text = "Edit" });
         buttonLayout.Add(new Button(this.deleteButtonClicked) { Text = "Remove" });
         buttonLayout.Add(null);
@@ -41,13 +41,21 @@ public class GeneralSettingsLayout : SettingsLayout {
             this.ChatClientListBox.Items.Add(new ChatClientListItem(chatClient));
         }
     }
-    
-    private void editButtonClicked(object? sender, EventArgs e) {
-        Form form = new EditChatClientForm(this.SelectedChatClient);
-        form.Show();
+
+    private void addButtonClicked(object? sender, EventArgs e) {
+        Form form = new AddChatClientForm();
         form.Closed += delegate {
             this.refresh();
         };
+        form.Show();
+    }
+    
+    private void editButtonClicked(object? sender, EventArgs e) {
+        Form form = new EditChatClientForm(this.SelectedChatClient);
+        form.Closed += delegate {
+            this.refresh();
+        };
+        form.Show();
     }
 
     private void deleteButtonClicked(object? sender, EventArgs e) {
