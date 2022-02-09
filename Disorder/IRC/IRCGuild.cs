@@ -28,6 +28,10 @@ public class IRCGuild : IGuild {
 
         this.Client = new TcpClient(address, port);
 
+        if(this.ChatClient.Password != null) {
+            this.Stream.RunIRCCommand($"PASS {this.ChatClient.Password}");
+        }
+
         this.Stream.RunIRCCommand($"NICK {this.ChatClient.User.Nickname}");
         this.Stream.RunIRCCommand($"USER {this.ChatClient.User.Username} * * :{this.ChatClient.User.Username}");
     }
@@ -112,7 +116,7 @@ public class IRCGuild : IGuild {
             case "001": { // Registered
                 this.ChatClient.InvokeLoggedIn();
 
-                this.ChatClient.User = IRCUser.FromCloak(trail.Substring(trail.LastIndexOf(' ') + 1));
+//                this.ChatClient.User = IRCUser.FromCloak(trail.Substring(trail.LastIndexOf(' ') + 1));
                 this.Users.Add((IRCUser)this.ChatClient.User);
                 this.autoJoin();
                 break;

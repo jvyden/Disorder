@@ -26,6 +26,9 @@ public class IRCChatClient : IChatClient {
     [ConfigurableProperty("Auto-join list")]
     public string AutoJoinList { get; set; } = "#general";
 
+    [ConfigurableProperty("Password (leave blank for none)")]
+    public string? Password { get; set; } = null;
+
     public void Initialize() {
         this.User = new IRCUser {
             Username = Username,
