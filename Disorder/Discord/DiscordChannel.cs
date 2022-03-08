@@ -48,7 +48,10 @@ public class DiscordChannel : IChannel {
         }
         return outMessages;
     }
+    
     public async Task<IEnumerable<IUser>> FetchUsers() {
         throw new NotImplementedException();
     }
+
+    public bool IsNSFW => this.Channel.Nsfw;
 }

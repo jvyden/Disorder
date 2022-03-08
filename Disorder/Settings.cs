@@ -66,6 +66,7 @@ public class Settings {
     public int ConfigVersion { get; set; } = CurrentConfigVersion;
 
     public List<IChatClient> ChatClients { get; set; } = new();
+    public bool ShowNSFWChannels { get; set; }
 
     public void Save() {
         string configFile = JsonConvert.SerializeObject(this, typeof(Settings), serializerSettings);

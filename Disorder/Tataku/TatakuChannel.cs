@@ -38,4 +38,6 @@ public class TatakuChannel : IChannel {
         this.MessageHistory.Add(message);
         this.MessageSent?.Invoke(this, message);
     }
+
+    public bool IsNSFW => Name.ToLower().Contains("nsfw");
 }

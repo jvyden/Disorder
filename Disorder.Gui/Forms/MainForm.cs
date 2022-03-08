@@ -163,8 +163,10 @@ public class MainForm : Form {
 
             return false;
         });
-
-        this.GuildList.Items.Insert(this.GuildList.Items.IndexOf(guildListItem) + 1, new ChannelListItem(channel));
+        
+        if(channel.IsNSFW && Settings.Instance.ShowNSFWChannels || !channel.IsNSFW) {
+            this.GuildList.Items.Insert(this.GuildList.Items.IndexOf(guildListItem) + 1, new ChannelListItem(channel));
+        }
 
         channel.MessageSent += delegate(object? _, IMessage message) {
             if(this.GuildList.SelectedValue is not ChannelListItem channelItem) return;
