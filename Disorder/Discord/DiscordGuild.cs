@@ -3,7 +3,7 @@ using Kettu;
 
 namespace Disorder.Discord;
 
-public class DiscordGuild : IGuild {
+public class DiscordGuild : IGuild, IHasWebIcon {
 
     public PartialGuild Guild;
 
@@ -38,4 +38,5 @@ public class DiscordGuild : IGuild {
     public override string ToString() {
         return $"{nameof(this.Name)}: {this.Name}, {nameof(this.Id)}: {this.Id}";
     }
+    public Uri IconUri => new(this.Guild.Icon.Url);
 }
