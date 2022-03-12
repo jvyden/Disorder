@@ -38,5 +38,13 @@ public class DiscordGuild : IGuild, IHasWebIcon {
     public override string ToString() {
         return $"{nameof(this.Name)}: {this.Name}, {nameof(this.Id)}: {this.Id}";
     }
-    public Uri IconUri => new(this.Guild.Icon.Url);
+    public Uri? IconUri {
+        get {
+            string? uri = this.Guild.Icon?.Url;
+
+            if(uri == null) return null;
+
+            return new Uri(uri);
+        }
+    }
 }

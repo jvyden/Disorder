@@ -1,5 +1,5 @@
 namespace Disorder; 
 
 public interface IHasWebIcon {
-    public Uri IconUri { get; }
+    public Uri? IconUri { get; }
 }

@@ -107,7 +107,7 @@ public class MainForm : Form {
         foreach(IGuild guild in this.chatClients.SelectMany(chatClient => chatClient.Guilds)) {
             GuildListItem guildListItem = new(guild);
             
-            if(guild is IHasWebIcon webIcon) {
+            if(guild is IHasWebIcon webIcon && webIcon.IconUri != null) {
                 Directory.CreateDirectory(Path.Combine(Settings.ConfigPath, "ServerIconCache"));
                 
                 string avatarUrl = webIcon.IconUri.ToString();
