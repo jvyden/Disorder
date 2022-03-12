@@ -7,7 +7,7 @@ namespace Disorder;
 public class Settings {
     private const string configFileName = "disorder.config.json";
 
-    public const int CurrentConfigVersion = 8; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
+    public const int CurrentConfigVersion = 9; // MUST BE INCREMENTED FOR EVERY CONFIG CHANGE!
 
     public static readonly string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Disorder");
 
@@ -67,6 +67,8 @@ public class Settings {
 
     public List<IChatClient> ChatClients { get; set; } = new();
     public bool ShowNSFWChannels { get; set; }
+
+    public bool ConstructDiscordChannels { get; set; } = true;
 
     public void Save() {
         string configFile = JsonConvert.SerializeObject(this, typeof(Settings), serializerSettings);

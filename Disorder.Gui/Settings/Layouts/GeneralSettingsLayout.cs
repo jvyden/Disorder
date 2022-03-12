@@ -13,7 +13,7 @@ public class GeneralSettingsLayout : SettingsLayout {
     public IChatClient SelectedChatClient => ((ChatClientListItem)this.ChatClientListBox.SelectedValue).ChatClient;
     
     public GeneralSettingsLayout() : base("General") {
-        this.Add(new FiringCheckBox(this.ShowNSFWChannels) { Text = "Show NSFW Channels" });
+        this.Add(new FiringCheckBox(this.showNSFWChannels) { Text = "Show NSFW Channels" });
         this.Add(new Label { Text = "Clients" });
         this.Add(ChatClientListBox = new ListBox());
         
@@ -64,7 +64,7 @@ public class GeneralSettingsLayout : SettingsLayout {
         this.refresh();
     }
 
-    private void ShowNSFWChannels(object? sender, bool isChecked) {
+    private void showNSFWChannels(object? sender, bool isChecked) {
         Settings.Instance.ShowNSFWChannels = isChecked;
     }
 }
