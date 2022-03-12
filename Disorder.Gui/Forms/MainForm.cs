@@ -135,6 +135,8 @@ public class MainForm : Form {
                 }
 
                 if(stream != null) {
+                    stream.Position = 0;
+                    
                     try {
                         Bitmap bitmap = new(stream);
                         guildListItem.Image = bitmap.WithSize(32, 32);
